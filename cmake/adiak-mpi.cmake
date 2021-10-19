@@ -1,0 +1,6 @@
+set(CMAKE_BUILD_TYPE "Release" CACHE STRING "")
+
+set(BUILD_SHARED_LIBS On  CACHE BOOL "")
+set(BUILD_TESTING     Off CACHE BOOL "")
+
+set(ENABLE_MPI        On  CACHE BOOL "")

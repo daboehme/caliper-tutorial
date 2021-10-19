@@ -9,29 +9,28 @@ run-verbose()
 SCRIPT_DIR=$(dirname ${BASH_SOURCE[0]})
 ROOT_DIR=$(bash -c "cd ${SCRIPT_DIR} && pwd")
 
-: ${BUILD_DIR:="${ROOT_DIR}/build"}
-: ${INSTALL_DIR:="${ROOT_DIR}/install"}
 : ${BUILD_CONFIG:="default"}
+: ${BUILD_DIR:="${ROOT_DIR}/build"}
+: ${INSTALL_DIR:="${ROOT_DIR}/install/${BUILD_CONFIG}"}
 
 echo "Build config:      ${BUILD_CONFIG}"
 echo "Root directory:    ${ROOT_DIR}"
-echo "Build directory:   "
+echo "Build directory:   ${BUILD_DIR}"
 echo "Install directory: ${INSTALL_DIR}"
 
 export CMAKE_PREFIX_PATH="${INSTALL_DIR};${CMAKE_PREFIX_PATH}"
 
-git submodule update --init --recursive
+( cd ${ROOT_DIR} ; git submodule update --init --recursive )
 
 mkdir -p "$BUILD_DIR" || exit 1
 
 build()
 {
-    echo "#### Building $1 ####"
+    echo -e "\n#### Building $1 ####\n"
 
     lcname=$(basename ${1,,})
     cmake_bindir="${BUILD_DIR}/build-${lcname}-${BUILD_CONFIG}"
 
-    # Build and install Adiak
     run-verbose cmake -B "${cmake_bindir}" \
         -C "${ROOT_DIR}/cmake/${lcname}-${BUILD_CONFIG}.cmake" \
         -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
@@ -41,6 +40,7 @@ build()
     run-verbose cmake --install "${cmake_bindir}"
 }
 
-build Adiak
-build Caliper
-build apps/LULESH
+for target in ${@:-"Adiak" "Caliper" "apps/LULESH"}
+do
+    build ${target}
+done
