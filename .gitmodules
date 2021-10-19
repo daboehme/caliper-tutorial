@@ -1,0 +1,10 @@
+[submodule "Adiak"]
+	path = Adiak
+	url = git@github.com:LLNL/Adiak.git
+[submodule "Caliper"]
+	path = Caliper
+	url = git@github.com:LLNL/Caliper.git
+[submodule "apps/LULESH"]
+	path = apps/LULESH
+	url = git@github.com:daboehme/LULESH.git
+	branch = adiak-caliper-support
