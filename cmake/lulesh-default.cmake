@@ -1,4 +1,4 @@
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "")
 
 set(WITH_MPI      Off CACHE BOOL "")
-set(WITH_OPENMP   On  CACHE BOOL "")
+set(WITH_OPENMP   Off CACHE BOOL "")

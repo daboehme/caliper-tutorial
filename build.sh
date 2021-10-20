@@ -28,7 +28,7 @@ build()
 {
     echo -e "\n#### Building $1 ####\n"
 
-    lcname=$(basename ${1,,})
+    lcname=$(bash -c "echo \"$(basename $1)\" | tr [:upper:] [:lower:]")
     cmake_bindir="${BUILD_DIR}/build-${lcname}-${BUILD_CONFIG}"
 
     run-verbose cmake -B "${cmake_bindir}" \
