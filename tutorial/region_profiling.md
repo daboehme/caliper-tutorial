@@ -275,4 +275,5 @@ You can find more information about Caliper's built-in measurement configuration
 [here](https://software.llnl.gov/Caliper/BuiltinConfigurations.html).
 
 [Next - The ConfigManager API](configmanager.md)
+
 [Back to Table of Contents](README.md)
