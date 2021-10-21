@@ -274,6 +274,6 @@ options. Note that some of the options have additional Caliper build dependencie
 You can find more information about Caliper's built-in measurement configurations
 [here](https://software.llnl.gov/Caliper/BuiltinConfigurations.html).
 
-[Next - The ConfigManager API](configmanager.md)
+[Next - Recording Program Metadata](recording_metadata.md)
 
 [Back to Table of Contents](README.md)

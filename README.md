@@ -17,8 +17,9 @@ examples.
 Build requirements:
 
 * A C++ compiler
-* CMake 3.17+
+* CMake 3.15+
 * MPI (optional)
+* CUDA (optional)
 
 Sourcing `setup-env.sh` builds the tutorial examples, if they have not been 
 built yet, and put them in `$PATH`:
