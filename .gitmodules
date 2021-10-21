@@ -8,3 +8,7 @@
 	path = apps/LULESH
 	url = git@github.com:daboehme/LULESH.git
 	branch = adiak-caliper-support
+[submodule "apps/XSBench"]
+	path = apps/XSBench
+	url = git@github.com:daboehme/XSBench.git
+	branch = caliper-support

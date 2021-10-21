@@ -40,7 +40,7 @@ build()
     run-verbose cmake --install "${cmake_bindir}"
 }
 
-for target in ${@:-"Adiak" "Caliper" "apps/LULESH"}
+for target in ${@:-"Adiak" "Caliper" "apps/LULESH" "apps/XSBench"}
 do
     build ${target}
 done
