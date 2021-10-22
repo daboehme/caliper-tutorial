@@ -17,7 +17,19 @@ Hatchet. Note that you can change the filename with the `output` option:
     $ ls lulesh.json
     lulesh.json
 
+## Profiling options
+
+The `hatchet-region-profile` config supports many Caliper profiling options,
+including MPI and CUDA profiling:
+
+    $ mpirun -n 8 lulesh2.0 -P hatchet-region-profile,profile.mpi,output=lulesh_mpi_x8.json
+    [...]
+    $ XSBench -P hatchet-region-profile,profile.cuda,output=xsbench.json
+    [...]
+
 ## Importing the data
+
+Check out the [notebook](HatchetCaliperImport.ipynb) for the example code!
 
 We can import the JSON file into a Hatchet GraphFrame with the 
 `from_caliper_json` reader:
@@ -60,15 +72,5 @@ reader:
 >>> obj['problem_size']
 '30'
 ```
-
-## Profiling options
-
-The `hatchet-region-profile` config supports many Caliper profiling options,
-including MPI and CUDA profiling:
-
-    $ lulesh2.0 -P hatchet-region-profile,profile.mpi,output=lulesh.json
-    [...]
-    $ XSBench -P hatchet-region-profile,profile.cuda,output=xsbench.json
-    [...]
 
 [Back to Table of Contents](README.md)
