@@ -6,10 +6,11 @@ built-in performance measurement configurations.
 ## Region instrumentation
 
 Much of Caliper's functionality is built around region instrumentation. We
-typically select the source-code regions to be measured manually by adding
-region markers to the code. Caliper provides a high-level instrumentation API
-using C and C++ macros (and Fortran functions) to mark various code
-constructs.
+mark source-code regions to be measured by adding region markers to the code. 
+Caliper provides a high-level instrumentation API using C and C++ macros 
+(and Fortran functions) to mark various code constructs.
+
+### Marking functions
 
 You can use the `CALI_CXX_MARK_FUNCTION` macro for marking functions in C++
 or `CALI_MARK_FUNCTION_BEGIN` and `CALI_MARK_FUNCTION_END` in C. The C++
@@ -32,6 +33,8 @@ void bar()
 }
 ```
 
+### Marking user-defined regions
+
 Use `CALI_MARK_BEGIN` and `CALI_MARK_END` to mark arbitrary code regions
 using a custom name:
 
@@ -42,6 +45,8 @@ CALI_MARK_BEGIN("TestRegion");
 
 CALI_MARK_END("TestRegion");
 ```
+
+### Best practices
 
 The region annotations don't do much on their own - we'll need to activate a
 Caliper measurement configuration at runtime to record performance data. The
@@ -54,8 +59,8 @@ A few things to keep in mind when annotating your code:
 * Caliper automatically constructs a hierarchy out of nested regions.
 * Regions created with the annotation macros must be nested correctly.
 
-There are other macros to mark loops (we'll get to those later), and
-lower-level instrumentation APIs for advanced use cases, documented here:
+There are other macros to mark loops, and lower-level instrumentation APIs 
+for advanced use cases, documented here:
 http://llnl.github.io/Caliper/AnnotationAPI.html
 
 
@@ -85,8 +90,7 @@ scope" by default. This way, events on sub-threads - e.g., inside OpenMP
 parallel regions - will be correctly associated with the surrounding Caliper
 region. If this option is used, only one thread should be creating regions.
 
-
-## Region profiling
+## Region profiling with runtime-report
 
 With region annotations in place, we can run performance measurements. An easy
 way to do this is to use one of Caliper's built-in measurement configurations.
@@ -157,7 +161,6 @@ with the minimum, maximum, and average time per process:
       CommSend                                      0.000138      0.019533      0.009467  1.564148
       CommRecv                                      0.000043      0.000216      0.000074  0.012185
 
-
 ## Profiling options
 
 Most built-in Caliper configurations have options to modify output or enable
@@ -182,7 +185,7 @@ Many build options for Caliper enable more profiling features, such as MPI,
 CUDA, I/O, or OpenMP profiling. For example, in an MPI-enabled build, we can 
 use the *profile.mpi* option to record time in MPI functions:
 
-    $ CALI_CONFIG=runtime-report,profile.mpi lulesh2.0 -i 10
+    $ CALI_CONFIG=runtime-report,profile.mpi mpirun -n 8 lulesh2.0 -i 10
     [...]
     Path                                       Min time/rank Max time/rank Avg time/rank Time %
     MPI_Comm_dup                                    0.027007      0.067727      0.053946  7.381235
@@ -208,6 +211,8 @@ use the *profile.mpi* option to record time in MPI functions:
             CalcLagrangeElements                    0.001654      0.002848      0.001876  0.256720
               CalcKinematicsForElems                0.045219      0.058842      0.049670  6.796116
     [...]
+
+## Getting help
 
 There are many more options and profiling configs available. You can run
 `cali-query --help=<config>` for the list of options for a given configuration:

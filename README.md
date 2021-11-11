@@ -17,18 +17,21 @@ examples.
 Build requirements:
 
 * A C++ compiler
+* Python interpreter
 * CMake 3.15+
 * MPI (optional)
 * CUDA (optional)
 
 Sourcing `setup-env.sh` builds the tutorial examples, if they have not been 
-built yet, and put them in `$PATH`:
+built yet, and puts them in `$PATH`:
 
     $ . setup-env.sh
     [...]
     Done! /home/example/caliper-tutorial/install/default/bin added to PATH
 
-There are different build configurations to support optional features: 
+### Build configurations
+
+There are different build configurations to support optional features:
 *default* is a basic version without optional dependencies, and *mpi* builds
 versions with MPI support. You can select a build configuration with an
 argument to `setup-env.sh`, e.g.:
@@ -36,6 +39,14 @@ argument to `setup-env.sh`, e.g.:
     $ . setup-env.sh mpi
 
 to build the *mpi* build config.
+
+The available configurations are:
+
+| Config  | Description                                                     |
+|---------|-----------------------------------------------------------------|
+| default | Base configuration without MPI or CUDA support                  |
+| mpi     | Adds MPI support for Caliper and builds LULESH MPI version      |
+| cuda    | Adds CUDA support for Caliper and builds XSBench CUDA version   |
 
 ## Tutorial contents
 
