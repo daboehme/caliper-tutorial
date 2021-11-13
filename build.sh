@@ -6,6 +6,27 @@ run-verbose()
     eval $@ || exit 1
 }
 
+check-cmake-version()
+{
+    cmake_version_needed=$1
+
+    # check if cmake exists and has the right version
+    if ! command -v cmake &> /dev/null ; then
+        echo "CMake was not found - exiting!"
+        exit 1
+    fi
+
+    cmake_version=$(cmake --version | head -1 | cut -d " " -f 3)
+    if [ $(echo "${cmake_version} ${cmake_version_needed}" | tr " " "\n" | sort --version-sort | head -n 1) = ${cmake_version_needed} ]; then
+        echo "Found CMake ${cmake_version}, OK"
+    else
+        echo "CMake is too old, we need ${cmake_version_needed}+. Found ${cmake_version}"
+        exit 1
+    fi
+}
+
+check-cmake-version "3.15"
+
 SCRIPT_DIR=$(dirname ${BASH_SOURCE[0]})
 ROOT_DIR=$(bash -c "cd ${SCRIPT_DIR} && pwd")
 
