@@ -42,11 +42,12 @@ to build the *mpi* build config.
 
 The available configurations are:
 
-| Config  | Description                                                     |
-|---------|-----------------------------------------------------------------|
-| default | Base configuration without MPI or CUDA support                  |
-| mpi     | Adds MPI support for Caliper and builds LULESH MPI version      |
-| cuda    | Adds CUDA support for Caliper and builds XSBench CUDA version   |
+| Config   | Description                                                     |
+|----------|-----------------------------------------------------------------|
+| default  | Base configuration without MPI or CUDA support                  |
+| mpi      | Adds MPI support for Caliper and builds LULESH MPI version      |
+| cuda     | Adds CUDA support for Caliper and builds XSBench CUDA version   |
+| cori-mpi | MPI version for NERSC Cori                                      |
 
 ## Tutorial contents
 
