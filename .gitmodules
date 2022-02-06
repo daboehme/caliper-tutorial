@@ -1,6 +1,7 @@
 [submodule "Adiak"]
 	path = Adiak
-	url = ../../LLNL/Adiak.git
+	url = ../../daboehme/Adiak.git
+	branch = add-dl-dependency
 [submodule "Caliper"]
 	path = Caliper
 	url = ../../LLNL/Caliper.git
@@ -12,3 +13,7 @@
 	path = apps/XSBench
 	url = ../../daboehme/XSBench.git
 	branch = caliper-support
+[submodule "apps/TeaLeaf_CUDA"]
+	path = apps/TeaLeaf_CUDA
+	url = ../../daboehme/TeaLeaf_CUDA.git
+	branch = dev/caliper-support
