@@ -50,10 +50,18 @@ build()
     echo -e "\n#### Building $1 ####\n"
 
     lcname=$(bash -c "echo \"$(basename $1)\" | tr [:upper:] [:lower:]")
+    cfgfile="${ROOT_DIR}/cmake/${lcname}-${BUILD_CONFIG}.cmake"
+
+    if [ ! -e ${cfgfile} ]
+    then
+        echo -e "No CMake cache file for config ${BUILD_CONFIG} exists, skipping"
+        return
+    fi
+
     cmake_bindir="${BUILD_DIR}/build-${lcname}-${BUILD_CONFIG}"
 
     run-verbose cmake -B "${cmake_bindir}" \
-        -C "${ROOT_DIR}/cmake/${lcname}-${BUILD_CONFIG}.cmake" \
+        -C ${cfgfile} \
         -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
         -S "${ROOT_DIR}/$1"
 

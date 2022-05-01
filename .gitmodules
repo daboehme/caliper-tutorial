@@ -1,6 +1,7 @@
 [submodule "Adiak"]
 	path = Adiak
-	url = ../../LLNL/Adiak.git
+	url = ../../daboehme/Adiak.git
+        branch = add-dl-dependency
 [submodule "Caliper"]
 	path = Caliper
 	url = ../../LLNL/Caliper.git
