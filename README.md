@@ -7,7 +7,7 @@ profiling library.
 The repository contains submodules. Clone with `--recursive` to check out all 
 submodules:
 
-    $ git clone --recursive https://github.com/daboehme/caliper-tutorial
+    $ git clone --recursive https://github.com/daboehme/caliper-tutorial.git
 
 ## Setting up the tutorial environment
 
