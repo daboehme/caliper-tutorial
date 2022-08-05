@@ -3,6 +3,8 @@
 
 #include <adiak.hpp>
 
+#include <iostream>
+
 void foo()
 {
     //   Mark function "foo" as a Caliper region. Automatically closes at the
@@ -22,6 +24,8 @@ void bar()
 
 int main(int argc, char* argv[])
 {
+    // MPI_Init(&argc, &argv);
+
     //   (Optional) Create a ConfigManager object to configure Caliper
     // profiling channels programmatically. We can now pass profiling
     // configurations on the command line, e.g.
@@ -38,7 +42,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    // Start the configured profiling channels
+    // Start the configured profiling channels, if any
     mgr.start();
 
     // Mark function "main" after starting the configured profiling channels
@@ -72,4 +76,7 @@ int main(int argc, char* argv[])
 
     // Flush output of configured profiling channels
     mgr.flush();
+
+    // In an MPI code, flush profiling output before MPI_Finalize().
+    // MPI_Finalize();
 }
