@@ -54,7 +54,12 @@ build()
 
     if [ ! -e ${cfgfile} ]
     then
-        echo -e "No CMake cache file for config ${BUILD_CONFIG} exists, skipping"
+        cfgfile="${ROOT_DIR}/cmake/${lcname}.cmake"
+    fi
+
+    if [ ! -e ${cfgfile} ]
+    then
+        echo -e "No CMake cache file for config ${BUILD_CONFIG} exists for $S1, skipping"
         return
     fi
 
@@ -69,7 +74,7 @@ build()
     run-verbose cmake --install "${cmake_bindir}"
 }
 
-for target in ${@:-"Adiak" "Caliper" "apps/LULESH" "apps/XSBench"}
+for target in ${@:-"Adiak" "Caliper" "apps/basic_example" "apps/LULESH" "apps/XSBench"}
 do
     build ${target}
 done
