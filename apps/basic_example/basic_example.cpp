@@ -7,8 +7,8 @@
 
 void foo()
 {
-    //   Mark function "foo" as a Caliper region. Automatically closes at the
-    // end of the function.
+    //   Mark function "foo" as a Caliper region. Automatically closes the
+    // region at the end of the function.
     CALI_CXX_MARK_FUNCTION;
     // ...
 }
@@ -16,7 +16,7 @@ void foo()
 void bar()
 {
     //   Mark function "bar" as a Caliper region using explicit begin/end
-    // markers. These also work in C.
+    // markers. These also work in C. Make sure to mark all function exits!
     CALI_MARK_FUNCTION_BEGIN;
     // ...
     CALI_MARK_FUNCTION_END;
@@ -42,6 +42,9 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    //   We can enable a profiling configuration explicitly if we want to:
+    // mgr.add("runtime-report(region.count,output=stderr)");
+
     // Start the configured profiling channels, if any
     mgr.start();
 
@@ -54,8 +57,9 @@ int main(int argc, char* argv[])
     const int N = 4;
 
     //   (Optional) Record some program metadata with Adiak. This lets us
-    // store environment and program configuration information together with
+    // save environment and program configuration information together with
     // the performance data.
+    adiak::executable();
     adiak::hostname();
     adiak::launchdate();
     adiak::value("iterations", N);
@@ -77,6 +81,6 @@ int main(int argc, char* argv[])
     // Flush output of configured profiling channels
     mgr.flush();
 
-    // In an MPI code, flush profiling output before MPI_Finalize().
+    //   In an MPI code, flush profiling output before MPI_Finalize().
     // MPI_Finalize();
 }
