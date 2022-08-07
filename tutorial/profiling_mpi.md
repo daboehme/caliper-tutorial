@@ -1,8 +1,53 @@
 # Profiling an MPI program
 
+Let's look at profiling an MPI code with Caliper. As an example, we'll use the
+Caliper-instrumented Lulesh proxy app that comes with this tutorial.
+Make sure the MPI build config is loaded:
+
+    $ . setup-env.sh mpi
+    Build config:      mpi
+    Root directory:    /home/david/src/caliper-tutorial
+    Install directory: /home/david/src/caliper-tutorial/install/mpi
+    Done! /home/david/src/caliper-tutorial/install/mpi/bin added to PATH
+
+You can now launch Lulesh with your system's MPI launcher, e.g. `mpirun`.
+Lulesh must be launched with a cubic power (e.g., 1, 8, 27, ...) of MPI ranks,
+others like 16 or 32 will not work. It is also helpful to limit the number of
+iterations for test runs with the *-i* parameter, e.g. `-i 10`:
+
+    $ mpirun -n 8 lulesh2.0 -i 10
+    Running problem size 30^3 per domain until completion
+    Num processors: 8
+    Total number of elements: 216000
+    [...]
+    Elapsed time         =       0.72 (s)
+    Grind time (us/z/c)  =  2.6684406 (per dom)  (0.72047898 overall)
+    FOM                  =  2998.0056 (z/s)
+
+## Print MPI statistics with mpi-report
+
+The *mpi-report* Caliper recipe measures and prints the number of MPI calls
+and the time spent in MPI functions:
+
+    $ CALI_CONFIG=mpireport mpirun -np 8 lulesh2.0 -i 10
+    [...]
+    Function      Count (min) Count (max) Time (min) Time (max) Time (avg) Time %
+                          435         505   0.495476   0.669825   0.546080 77.752653
+    MPI_Allreduce           9           9   0.005468   0.161736   0.107671 15.330481
+    MPI_Waitall            31          31   0.004131   0.041330   0.022909  3.261873
+    MPI_Comm_dup            1           1   0.000132   0.019433   0.014170  2.017622
+    MPI_Wait              107         177   0.000572   0.018274   0.009785  1.393148
+    MPI_Isend             107         177   0.000652   0.001401   0.001017  0.144732
+    MPI_Irecv             107         177   0.000330   0.000507   0.000414  0.058875
+    MPI_Barrier             1           1   0.000040   0.000403   0.000248  0.035329
+    MPI_Reduce              1           1   0.000013   0.000056   0.000031  0.004449
+    MPI_Finalize            1           1   0.000003   0.000010   0.000006  0.000837
+
 ## Region instrumentation in LULESH
 
-You'll find various function annotations in the LULESH example app in
+The Lulesh version provided with this tutorial has Caliper annotations for many
+top-level functions and the main loop.
+You'll find various function annotations in
 [lulesh.cc](https://github.com/daboehme/LULESH/blob/adiak-caliper-support/lulesh.cc):
 
 ```c++
@@ -28,10 +73,13 @@ region. If this option is used, only one thread should be creating regions.
 
 ## Using runtime-report with MPI
 
-In an MPI build, the report prints summary statistics across all MPI processes
-with the minimum, maximum, and average time per process:
+Most Caliper measurement recipes like runtime-report work out-of-the box with
+MPI programs.
+In an MPI build, runtime-report prints summary statistics across
+all MPI processes with the minimum, maximum, and average time per process:
 
     $ CALI_CONFIG=runtime-report mpirun -n 8 lulesh2.0 -i 10
+    [...]
     Path                                       Min time/rank Max time/rank Avg time/rank Time %
     main                                            0.006932      0.027010      0.010127  1.673192
       lulesh.cycle                                  0.000068      0.000110      0.000095  0.015654
@@ -65,7 +113,8 @@ with the minimum, maximum, and average time per process:
       CommSend                                      0.000138      0.019533      0.009467  1.564148
       CommRecv                                      0.000043      0.000216      0.000074  0.012185
 
-In an MPI-enabled build, we can use the *profile.mpi* option to record time in MPI functions:
+Furthermore, we can use the *profile.mpi* option to measure and print the time
+in MPI functions inside the Lulesh region annotations:
 
     $ CALI_CONFIG=runtime-report,profile.mpi mpirun -n 8 lulesh2.0 -i 10
     [...]
@@ -93,6 +142,54 @@ In an MPI-enabled build, we can use the *profile.mpi* option to record time in M
             CalcLagrangeElements                    0.001654      0.002848      0.001876  0.256720
               CalcKinematicsForElems                0.045219      0.058842      0.049670  6.796116
     [...]
+
+The *mpi.message.count* and *mpi.message.size* options collect statistics for
+the number and sizes of MPI messages, respectively:
+
+    $ CALI_CONFIG=runtime-report,mpi.message.size mpirun -n 8 lulesh2.0 -i 10
+    [...]
+    Path                                      [...] Msg size (min) Msg size (avg) Msg size (max)
+    main
+      MPI_Reduce                                          0.000000       7.000000       8.000000
+      lulesh.cycle
+        LagrangeLeapFrog
+        [...]
+            CalcQForElems
+              CalcMonotonicQForElems
+              CommMonoQ
+                MPI_Wait                              21600.000000   21600.000000   21600.000000
+              CommSend
+                MPI_Waitall
+                MPI_Isend                             21600.000000   21600.000000   21600.000000
+              CommRecv
+                MPI_Irecv
+            CalcLagrangeElements
+              CalcKinematicsForElems
+          LagrangeNodal
+            CommSyncPosVel
+              MPI_Wait                                   48.000000   24152.816327   46128.000000
+            CommSend
+              MPI_Isend                                  48.000000   24152.816327   46128.000000
+              MPI_Waitall
+
+We can see that Lulesh sends messages with 21600 bytes inside *CalcQForElems*,
+but different-sized messages from 48 up to 46128 bytes inside *LagrangeNodal*.
+
+## Summary
+
+Most Caliper profiling recipes work out-of-the box with MPI programs and
+automatically collect and compute performance statistics across all MPI ranks.
+
+Recipes and options for MPI profiling:
+
+* mpi-report
+  * Recipe that prints counts and time spent in MPI functions
+* profile.mpi
+  * Measure time in MPI functions in runtime-report etc.
+* mpi.message.size
+  * Collect statistics on the sizes of MPI messages
+* mpi.message.count
+  * Collect statistics for the number of MPI messages sent and received
 
 [Next - Recording Program Metadata](recording_metadata.md)
 
