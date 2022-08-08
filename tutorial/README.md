@@ -5,14 +5,15 @@ Fortran that lets you integrate performance measurement capabilities directly
 into your code. It is primarily designed for HPC codes, with support for MPI,
 OpenMP, CUDA, and HIP programming models.
 
+## Caliper use cases
+
 Caliper is great for:
 
-* Lightweight always-on profiling
+### Lightweight always-on profiling
 
-    You can enable profiling within the application, for example to create a
-    simple performance report every time your program runs:
+You can enable profiling within the application, for example to create a
+simple performance report every time your program runs:
 
-    ```
     Path                                       Time (E) Time (I) Time % (E) Time % (I) 
     main                                       0.008341 1.024472   0.812121  99.747630 
       lulesh.cycle                             0.000055 1.016131   0.005355  98.935509 
@@ -33,33 +34,42 @@ Caliper is great for:
                   CalcFBHourglassForceForElems 0.047864 0.047864   4.660274   4.660274 
                 IntegrateStressForElems        0.033269 0.033269   3.239233   3.239233 
         TimeIncrement                          0.000010 0.000010   0.000974   0.000974 
-    ```
 
-* Analyzing MPI transfers and GPU activities
+### Analyzing MPI transfers and GPU activities
 
-    Caliper's MPI and CPU measurement functionality lets you track time in
-    MPI functions, host<->device memory copies, and GPU kernels. In MPI 
-    programs, Caliper automatically collects and aggregates performance data
-    from all ranks.
+Caliper's MPI and CPU measurement functionality lets you track time in
+MPI functions, host<->device memory copies, and GPU kernels. In MPI 
+programs, Caliper automatically collects and aggregates performance data
+from all ranks.
 
-* Automated performance data collection and analysis
+### Automated performance data collection and analysis
 
-    Caliper performance measurements are easily scriptable, which makes it
-    ideally suited for automated performance data collection workflows. 
-    Moreover, Caliper can automatically record custom program metadata describing
-    each run, enabling performance comparisons across large collections of runs -
-    ideal for performance regression testing, scalability studies, or exploring
-    different program configurations.
+Caliper performance measurements are easily scriptable, which makes it
+ideally suited for automated performance data collection workflows. 
+Moreover, Caliper can automatically record custom program metadata describing
+each run, enabling performance comparisons across large collections of runs -
+ideal for performance regression testing, scalability studies, or exploring
+different program configurations.
 
-    Caliper can write a variety of machine-readable output formats that allow 
-    you to create custom analysis scripts in Python, for example with the
-    [Hatchet](https://github.com/LLNL/hatchet) call-path analysis framework:
+Caliper can write a variety of machine-readable output formats that allow 
+you to create custom analysis scripts in Python, for example with the
+[Hatchet](https://github.com/LLNL/hatchet) call-path analysis framework:
 
     ![Analyzing Caliper data in Hatchet](img/hatchet_screenshot.png)
 
 ## Getting Started
 
+This tutorial repository comes with a copy of Caliper and scripts to configure
+and build Caliper for the tutorial examples.
 
+Generally, you can download and install Caliper either with the
+[spack](https://github.com/spack/spack) package manager, or directly from the
+[Caliper](https://github.com/LLNL/Caliper) github repository.
+With spack, just run
+
+    $ spack install caliper
+
+To download and install the latest Caliper release and its dependencies.
 
 ## Tutorial contents
 
