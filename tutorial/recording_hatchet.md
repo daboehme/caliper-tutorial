@@ -1,4 +1,4 @@
-# Recording Data for Hatchet
+# Analyzing Data with Hatchet
 
 [Hatchet](https://github.com/hatchet/hatchet) is a Python library for analyzing
 hierarchical performance data, such as Caliper's region profiles. We can 

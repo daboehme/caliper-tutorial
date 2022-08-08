@@ -12,6 +12,6 @@ This tutorial covers basic usage of Caliper.
 
 * [ConfigManager](configmanager.md) covers the ConfigManager profiling control API.
 
-* [Recording data for Hatchet](recording_hatchet.md) shows how to record data for custom analyses with [Hatchet](https://github.com/hatchet/hatchet).
+* [Analyzing data with Hatchet](recording_hatchet.md) shows how to record data for custom analyses with [Hatchet](https://github.com/hatchet/hatchet).
 
 * [Analyzing CUDA codes](analyzing_cuda_codes.md) shows options to profile CUDA programs with Caliper.

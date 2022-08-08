@@ -11,7 +11,7 @@ Caliper provides a high-level instrumentation API using C and C++ macros
 (and Fortran functions) to mark various code constructs.
 
 The [basic_example.cpp](../apps/basic_example/basic_example.cpp) program in
-this tutorial shows how to use the varios annotation macros in a C++ code.
+this tutorial shows how to use the various annotation macros in a C++ code.
 Refer to the
 [C example](https://github.com/LLNL/Caliper/blob/master/examples/apps/c-example.c)
 and

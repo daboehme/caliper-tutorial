@@ -1,15 +1,21 @@
-# Recording Program Metadata
+# Recording Program Metadata with Adiak
 
-Here, you'll learn how to collect program metadata with the Adiak library.
+Caliper is often used for performance comparison studies involving large
+collections of runs - for example, automatic performance regression testing,
+scaling studies, or comparing different program configurations. To do this
+efficiently, Caliper needs to record not only the performance data itself, but
+also program metadata that describes each run.
 
 ## The Adiak library
 
-Caliper works together with the [Adiak](https://github.com/LLNL/Adiak) library
-to record program metadata. This data helps us with comparisons across runs - for
-example, comparing performance between different machines or different program
-configurations.
+Caliper works together with [Adiak](https://github.com/LLNL/Adiak), a C/C++
+library to record program metadata. This data helps us with comparisons across
+runs - for example, comparing performance between different machines or
+different program configurations.
 
-Adiak includes built-in functionality to record many common attributes:
+Adiak has two types of functions. First, there is built-in functionality
+to record common metadata attributes. These functions record things like
+the user name, executable name, launch date, etc.:
 
 ```c
 int adiak_user();  /* Makes a 'user' name/val with the real name of who's running the job */
@@ -32,8 +38,13 @@ int adiak_hostlist(); /* Makes a 'hostlist' name/val with the set of hostnames i
 int adiak_num_hosts(); /* Makes a 'numhosts' name/val with the number of hosts in this MPI job */
 ```
 
-There is also a key-value style API to record program-specific information, like
-program configuration settings:
+Second, there is a key-value interface for custom data.
+This is useful to record program-specific information, like input parameters
+and configuration settings. In C, we can do this with the `adiak_namevalue`
+function. It supports many different data types and uses a printf-style type
+descriptor to describe the data types. Supported data types include integers
+(`%d`, `%u`), strings (`%s`), specialized strings like program version strings
+(`%v`), and even compound types like arrays and structs:
 
 ```c
 /**
@@ -41,15 +52,15 @@ program configuration settings:
  * value, which is constructed from the string specifiers above.  The varargs contains parameters
  * for the type.  The entire type describes how value is encoded.  For example:
  *
- * adiak_namevalue("numrecords", adiak_general, "%d", 10);
+ * adiak_namevalue("numrecords", adiak_general, NULL, "%d", 10);
  *
- * adiak_namevalue("buildcompiler", adiak_general, "%v", "gcc@4.7.3");
+ * adiak_namevalue("buildcompiler", adiak_general, NULL, "%v", "gcc@4.7.3");
  *
  * double gridvalues[] = { 5.4, 18.1, 24.0, 92.8 };
- * adiak_namevalue("gridvals", adiak_general, "[%f]", gridvalues, 4);
+ * adiak_namevalue("gridvals", adiak_general, NULL, "[%f]", gridvalues, 4);
  *
  * struct { int pos; const char *val; } letters[3] = { {1, 'a'}, {2, 'b'}, {3, 'c} }
- * adiak_namevalue("alphabet", adiak_general, "[(%u, %s)]", letters, 3, 2);
+ * adiak_namevalue("alphabet", adiak_general, NULL, "[(%u, %s)]", letters, 3, 2);
  **/
 int adiak_namevalue(const char *name, int category, const char *subcategory, const char *typestr, ...);
 ```
@@ -60,8 +71,57 @@ A simpler form is available for C++:
 adiak::value("key", value);
 ```
 
-Caliper automatically adds the recorded metadata to the profiling output for
-most output formats.
+This template function automatically deduces a suitable Adiak datatype from
+the given `value` parameter. It works for most built-in types like integers
+and strings, as well as certain compound types like `std::vector`.
+
+## A simple example
+
+The [basic example](../apps/basic_example/basic_example.cpp) program shows how
+we record program information with Adiak in C++. We use Adiak's built-in
+functionality to record the executable name, host name, and launch date, and
+the `adiak::value())` function to record the selected number of
+main loop iterations in this run:
+
+```c++
+#include <adiak.hpp>
+
+adiak::executable();
+adiak::hostname();
+adiak::launchdate();
+adiak::value("iterations", N);
+```
+
+When using CMake, we can build a program with Adiak support by adding the
+`adiak::adiak` target as a dependency:
+
+    find_package(adiak)
+    target_link_libraries(basic_example adiak::adiak)
+
+## Viewing program metadata
+
+Caliper configuration recipes that produce machine-readable output like
+*hatchet-region-profile* automatically include the recorded Adiak values
+in their .json or .cali output files. We can also view the recorded
+metadata in the runtime report with the *print.metadata* option:
+
+    $ CALI_CONFIG=runtime-report,print.metadata basic_example
+    cali.caliper.version : 2.8.0
+    iterations           :          4
+    launchdate           : 1659921370
+    hostname             : gowron.dbonet
+    executable           : basic_example
+    cali.channel         : runtime-report
+    Path        Min time/rank Max time/rank Avg time/rank Time %
+    main             0.000025      0.000025      0.000025 1.712329
+      main loop      0.000014      0.000014      0.000014 0.958904
+        bar          0.000002      0.000002      0.000002 0.136986
+        foo          0.000002      0.000002      0.000002 0.136986
+      setup          0.000111      0.000111      0.000111 7.602740
+
+We see the recorded executable name, host name, launchdate (as a UNIX epoch
+stamp), iteration count, and Caliper-provided metadata like the Caliper
+version number and the profiling channel name.
 
 ## Program metadata in LULESH
 
@@ -120,56 +180,8 @@ adiak::value("elapsed_time", elapsed_time);
 adiak::value("figure_of_merit", 1000.0/grindTime2);
 ```
 
-## Program metadata in XSBench
-
-The XSBench example app demonstrates the Adiak C API. You find the Adiak
-annotations in the `record_globals` function in 
-[io.c](https://github.com/daboehme/XSBench/blob/caliper-support/openmp-threading/io.c):
-
-```c
-void record_globals(Inputs in, int version)
-{
-	adiak_cmdline();
-	adiak_executable();
-	adiak_clustername();
-	adiak_job_size();
-	adiak_launchdate();
-	adiak_user();
-
-	const char* method = in.simulation_method == EVENT_BASED ? "event" : "history";
-	adiak_namevalue("method",    adiak_general, NULL, "%s", method);
-	adiak_namevalue("size",      adiak_general, NULL, "%s", in.HM);
-	adiak_namevalue("materials", adiak_general, NULL, "%d", 12);
-	adiak_namevalue("nuclides",  adiak_general, NULL, "%d", in.n_isotopes);
-	adiak_namevalue("kernel",    adiak_general, NULL, "%d", in.kernel_id);
-	adiak_namevalue("threads",   adiak_general, NULL, "%d", in.nthreads);
-	adiak_namevalue("version",   adiak_general, NULL, "%d", version);
-
-	switch (in.grid_type) {
-		case HASH:
-			adiak_namevalue("grid",      adiak_general, NULL, "%s", "hash");
-			adiak_namevalue("hash_bins", adiak_general, NULL, "%d", in.hash_bins);
-			break;
-		case NUCLIDE:
-			adiak_namevalue("grid",      adiak_general, NULL, "%s", "nuclide");
-			break;
-		case UNIONIZED:
-			adiak_namevalue("grid",      adiak_general, NULL, "%s", "unionized");
-			break;
-		default:
-			break;
-	}
-}
-```
-
-Here, too, we record basic environment information as well as the program
-configuration flags.
-
-## Viewing program metadata
-
-Most machine-readable formats produced by Caliper (JSON, .cali) include this
-data automatically. For report configurations like `runtime-report`, you can
-use the `print.metadata` option to view the recorded metadata:
+We can view the recorded data with in a runtime report with the
+*print.metadata* option:
 
 ```
 $ CALI_CONFIG=runtime-report,print.metadata lulesh2.0 -i 10
@@ -211,6 +223,51 @@ main                                       0.004968 0.219693   2.226714  98.4689
             IntegrateStressForElems        0.021408 0.021408   9.595310   9.595310
     TimeIncrement                          0.000009 0.000009   0.004034   0.004034
 ```
+
+## Program metadata in XSBench
+
+The XSBench example app demonstrates the Adiak C API. You find the Adiak
+annotations in the `record_globals` function in
+[io.c](https://github.com/daboehme/XSBench/blob/caliper-support/openmp-threading/io.c):
+
+```c
+void record_globals(Inputs in, int version)
+{
+	adiak_cmdline();
+	adiak_executable();
+	adiak_clustername();
+	adiak_job_size();
+	adiak_launchdate();
+	adiak_user();
+
+	const char* method = in.simulation_method == EVENT_BASED ? "event" : "history";
+	adiak_namevalue("method",    adiak_general, NULL, "%s", method);
+	adiak_namevalue("size",      adiak_general, NULL, "%s", in.HM);
+	adiak_namevalue("materials", adiak_general, NULL, "%d", 12);
+	adiak_namevalue("nuclides",  adiak_general, NULL, "%d", in.n_isotopes);
+	adiak_namevalue("kernel",    adiak_general, NULL, "%d", in.kernel_id);
+	adiak_namevalue("threads",   adiak_general, NULL, "%d", in.nthreads);
+	adiak_namevalue("version",   adiak_general, NULL, "%d", version);
+
+	switch (in.grid_type) {
+		case HASH:
+			adiak_namevalue("grid",      adiak_general, NULL, "%s", "hash");
+			adiak_namevalue("hash_bins", adiak_general, NULL, "%d", in.hash_bins);
+			break;
+		case NUCLIDE:
+			adiak_namevalue("grid",      adiak_general, NULL, "%s", "nuclide");
+			break;
+		case UNIONIZED:
+			adiak_namevalue("grid",      adiak_general, NULL, "%s", "unionized");
+			break;
+		default:
+			break;
+	}
+}
+```
+
+Here, too, we record basic environment information as well as the program
+configuration flags.
 
 [Next - ConfigManager](configmanager.md)
 
