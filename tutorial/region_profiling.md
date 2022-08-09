@@ -10,9 +10,9 @@ mark source-code regions to be measured by adding region markers to the code.
 Caliper provides a high-level instrumentation API using C and C++ macros
 (and Fortran functions) to mark various code constructs.
 
-The [basic_example.cpp](../apps/basic_example/basic_example.cpp) program in
-this tutorial shows how to use the various annotation macros in a C++ code.
-Refer to the
+The [apps/basic_example/basic_example.cpp](../apps/basic_example/basic_example.cpp) 
+program in this tutorial shows how to use the various annotation macros in a 
+C++ code. Refer to the
 [C example](https://github.com/LLNL/Caliper/blob/master/examples/apps/c-example.c)
 and
 [Fortran example](https://github.com/LLNL/Caliper/blob/master/examples/apps/fortran-example.f)
@@ -89,6 +89,22 @@ A few things to keep in mind when annotating your code:
 
 Lower-level instrumentation APIs for advanced use cases are documented here:
 http://llnl.github.io/Caliper/AnnotationAPI.html
+
+## Linking the Caliper library
+
+Caliper provides a CMake package file, so with CMake projects, we can directly
+import the *caliper* CMake package and link our program with the *caliper* 
+target, as shown in the [CMakeLists.txt](../apps/basic_example/CMakeLists.txt)
+file of our example project:
+
+  find_package(caliper REQUIRED)
+  add_executable(basic_example basic_example.cpp)
+  target_link_libraries(basic_example caliper)
+
+Without CMake, link the `libcaliper.so` library to the target code:
+
+  CALIPER_DIR=/path/to/caliper/installation
+  g++ -I${CALIPER_DIR}/include -L${CALIPER_DIR}/lib64 -lcaliper
 
 ## Region profiling with runtime-report
 
@@ -167,4 +183,4 @@ You can find more information about Caliper's built-in measurement recipes
 
 [Next - Profiling an MPI program](profiling_mpi.md)
 
-[Back to Table of Contents](README.md)
+[Back to Table of Contents](README.md#tutorial-contents)

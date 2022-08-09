@@ -55,21 +55,94 @@ Caliper can write a variety of machine-readable output formats that allow
 you to create custom analysis scripts in Python, for example with the
 [Hatchet](https://github.com/LLNL/hatchet) call-path analysis framework:
 
-    ![Analyzing Caliper data in Hatchet](img/hatchet_screenshot.png)
+![Analyzing Caliper data in Hatchet](img/hatchet_screenshot.png)
 
 ## Getting Started
 
 This tutorial repository comes with a copy of Caliper and scripts to configure
-and build Caliper for the tutorial examples.
+and build Caliper and the tutorial examples - see the 
+[tutorial setup](#tutorial-setup) instructions below.
 
 Generally, you can download and install Caliper either with the
 [spack](https://github.com/spack/spack) package manager, or directly from the
 [Caliper](https://github.com/LLNL/Caliper) github repository.
-With spack, just run
+With spack, just run `spack install`:
 
-    $ spack install caliper
+    spack install caliper
 
-To download and install the latest Caliper release and its dependencies.
+To build and install Caliper manually, clone the repository from Github and
+and run CMake: 
+
+    git clone https://github.com/LLNL/Caliper
+    mkdir build && cd build
+    cmake -DCMAKE_INSTALL_PREFIX=<installation directory> ..
+    make install
+
+There are many build options, some of which require additional
+dependencies. See the 
+[build instructions](https://software.llnl.gov/Caliper/build.html)
+in the documentation to learn more.
+
+## Resources
+
+You can find the Caliper Github *repository* here:
+<https://github.com/LLNL/Caliper>.
+
+The main Caliper *documentation* site is here:
+<https://software.llnl.gov/Caliper/index.html>.
+
+For general *questions and comments*, please use the Github discussion page:
+<https://github.com/LLNL/Caliper/discussions>.
+
+For *bug reports*, please use the Github issue tracker:
+<https://github.com/LLNL/Caliper/issues>.
+
+## Tutorial setup
+
+To build the tutorial contents, you'll need 
+
+* A C++ compiler
+* Python interpreter
+* CMake 3.15+
+* MPI (optional)
+* CUDA (optional)
+
+Clone the tutorial repository with
+
+  git clone --recursive https://github.com/daboehme/caliper-tutorial
+
+Sourcing `setup-env.sh` builds the tutorial examples, if they have not been 
+built yet, and puts them in `$PATH`:
+
+    $ . setup-env.sh
+    [...]
+    Done! /home/example/caliper-tutorial/install/default/bin added to PATH
+
+There are different build configurations to support optional features:
+*default* is a basic version without optional dependencies, and *mpi* builds
+versions with MPI support. You can select a build configuration with an
+argument to `setup-env.sh`, e.g.:
+
+    . setup-env.sh mpi
+
+to build the *mpi* build config. The available configurations are:
+
+| Config   | Description                                                     |
+|----------|-----------------------------------------------------------------|
+| default  | Base configuration without MPI or CUDA support                  |
+| mpi      | Adds MPI support for Caliper and builds LULESH MPI version      |
+| cuda     | Adds CUDA support for Caliper and builds XSBench CUDA version   |
+
+The tutorial builds three Caliper-instrumented example applications that
+demonstrate various Caliper capabilities. 
+
+| Directory          | Executable name | Description                         |
+|--------------------|-----------------|-------------------------------------|
+| apps/basic_example | basic_example   | A simple example program for the Caliper instrumentation and ConfigManager APIs |
+| apps/LULESH        | lulesh2.0       | A C++ HPC proxy app for demonstrating MPI profiling |
+| apps/XSBench       | XSBench         | A HPC proxy app for demonstrating CUDA profiling |
+
+Now, let's get started with the first tutorial chapter - [region profiling](region_profiling.md)!
 
 ## Tutorial contents
 

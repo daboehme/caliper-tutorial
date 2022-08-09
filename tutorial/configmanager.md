@@ -112,4 +112,4 @@ cali_ConfigManager_flush(&mgr);
 
 [Next - Analyzing data with Hatchet](recording_hatchet.md)
 
-[Back to Table of Contents](README.md)
+[Back to Table of Contents](README.md#tutorial-contents)

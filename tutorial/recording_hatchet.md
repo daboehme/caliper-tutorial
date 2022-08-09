@@ -1,6 +1,6 @@
 # Analyzing Data with Hatchet
 
-[Hatchet](https://github.com/hatchet/hatchet) is a Python library for analyzing
+[Hatchet](https://github.com/LLNL/hatchet) is a Python library for analyzing
 hierarchical performance data, such as Caliper's region profiles. We can 
 record data for Hatchet with Caliper's `hatchet-region-profile` config:
 
@@ -75,4 +75,4 @@ reader:
 
 [Next - Analyzing CUDA codes](analyzing_cuda_codes.md)
 
-[Back to Table of Contents](README.md)
+[Back to Table of Contents](README.md#tutorial-contents)
