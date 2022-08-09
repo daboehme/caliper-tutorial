@@ -29,7 +29,7 @@ iterations for test runs with the *-i* parameter, e.g. `-i 10`:
 The *mpi-report* Caliper recipe measures and prints the number of MPI calls
 and the time spent in MPI functions:
 
-    $ CALI_CONFIG=mpireport mpirun -np 8 lulesh2.0 -i 10
+    $ CALI_CONFIG=mpi-report mpirun -np 8 lulesh2.0 -i 10
     [...]
     Function      Count (min) Count (max) Time (min) Time (max) Time (avg) Time %
                           435         505   0.495476   0.669825   0.546080 77.752653

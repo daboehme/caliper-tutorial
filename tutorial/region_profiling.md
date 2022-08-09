@@ -224,6 +224,6 @@ which can be very helpful for diagnosing problems or submitting bug reports:
 * The `runtime-report` recipe collects and prints the time in the instrumented regions
 * You can add additional options like `region.count` to most recipes
 
-[Next - Profiling an MPI program](profiling_mpi.md)
+[Next - Profiling MPI programs](profiling_mpi.md)
 
 [Back to Table of Contents](README.md#tutorial-contents)

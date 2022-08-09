@@ -43,7 +43,7 @@ This is useful to record program-specific information, like input parameters
 and configuration settings. In C, we can do this with the `adiak_namevalue`
 function. It supports many different data types and uses a printf-style type
 descriptor to describe the data types. Supported data types include integers
-(`%d`, `%u`), strings (`%s`), specialized strings like program version strings
+(`%d`, `%u`), strings (`%s`), specialized strings like program versions
 (`%v`), and even compound types like arrays and structs:
 
 ```c
@@ -80,7 +80,7 @@ and strings, as well as certain compound types like `std::vector`.
 The [basic example](../apps/basic_example/basic_example.cpp) program shows how
 we record program information with Adiak in C++. We use Adiak's built-in
 functionality to record the executable name, host name, and launch date, and
-the `adiak::value())` function to record the selected number of
+the `adiak::value()` function to record the selected number of
 main loop iterations in this run:
 
 ```c++
@@ -101,9 +101,9 @@ When using CMake, we can build a program with Adiak support by adding the
 ## Viewing program metadata
 
 Caliper configuration recipes that produce machine-readable output like
-*hatchet-region-profile* automatically include the recorded Adiak values
+*hatchet-region-profile* automatically include the collected Adiak values
 in their .json or .cali output files. We can also view the recorded
-metadata in the runtime report with the *print.metadata* option:
+metadata in *runtime-report* with the *print.metadata* option:
 
     $ CALI_CONFIG=runtime-report,print.metadata basic_example
     cali.caliper.version : 2.8.0
@@ -120,8 +120,8 @@ metadata in the runtime report with the *print.metadata* option:
       setup          0.000111      0.000111      0.000111 7.602740
 
 We see the recorded executable name, host name, launchdate (as a UNIX epoch
-stamp), iteration count, and Caliper-provided metadata like the Caliper
-version number and the profiling channel name.
+stamp), iteration count, and some Caliper-provided metadata attributes
+like the Caliper version number and the profiling channel name.
 
 ## Program metadata in LULESH
 
