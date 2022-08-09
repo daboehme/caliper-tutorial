@@ -3,7 +3,8 @@
 SCRIPT_DIR=$(dirname ${BASH_SOURCE[0]})
 ROOT_DIR=$(bash -c "cd ${SCRIPT_DIR} && pwd")
 
-_build_config="${1:-default}"
+# MPI should be the default config for RADIUSS tutorial
+_build_config="${1:-mpi}"
 _install_dir=${INSTALL_DIR:-"${ROOT_DIR}/install/${_build_config}"}
 
 echo "Build config:      ${_build_config}"

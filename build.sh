@@ -74,7 +74,14 @@ build()
     run-verbose cmake --install "${cmake_bindir}"
 }
 
-for target in ${@:-"Adiak" "Caliper" "apps/basic_example" "apps/LULESH" "apps/XSBench"}
+# RADIUSS AWS config should have Caliper installed in Spack environment
+if ! spack find caliper &> /dev/null ; then
+    build "Adiak"
+    build "Caliper"
+fi
+
+# for target in ${@:-"Adiak" "Caliper" "apps/basic_example" "apps/LULESH" "apps/XSBench"}
+for target in ${@:-"apps/basic_example" "apps/LULESH" "apps/XSBench"}
 do
     build ${target}
 done
