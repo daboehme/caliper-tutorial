@@ -17,4 +17,6 @@ fi
 export PATH=${_install_dir}/bin:${PATH}
 export CMAKE_PREFIX_PATH="${_install_dir};${CMAKE_PREFIX_PATH}"
 
+export BUILD_CONFIG=${_build_config}
+
 echo "Done! ${_install_dir}/bin added to PATH"

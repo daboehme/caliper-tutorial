@@ -1,4 +1,4 @@
-# Profiling an MPI program
+# Profiling MPI programs
 
 Let's look at profiling an MPI code with Caliper. As an example, we'll use the
 Caliper-instrumented Lulesh proxy app that comes with this tutorial.
@@ -193,4 +193,4 @@ Recipes and options for MPI profiling:
 
 [Next - Recording Program Metadata](recording_metadata.md)
 
-[Back to Table of Contents](README.md)
+[Back to Table of Contents](README.md#tutorial-contents)

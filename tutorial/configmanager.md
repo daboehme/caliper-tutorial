@@ -1,7 +1,10 @@
 # The ConfigManager API
 
-Here, you'll learn how to use the ConfigManager API to control performance 
-profiling programmatically within the code.
+A unique feature in Caliper is the ConfigManager API, which allows you to
+control profiling programmatically. We can use this to control performance
+profiling through program-specific means, like a command-line argument, and
+even automatically enable a profiling configuration whenever the program
+runs.
 
 ## ConfigManager basics
 
@@ -20,8 +23,9 @@ and trigger output with `flush()`. In MPI programs, the `flush()` method
 must be called before `MPI_Finalize`. You can pause profiling with
 `stop()` and resume it by calling `start()` again.
 
-The example creates a ConfigManager that accepts a profiling configuration from
-the first command-line argument:
+Our [basic example](../apps/basic_example/basic_example.cpp) creates a 
+ConfigManager that accepts a profiling configuration from the first 
+command-line argument:
 
 ```c++
 #include <caliper/cali.h>
@@ -36,11 +40,11 @@ int main(int argc, char* argv[])
     MPI_Init(&argc, &argv);
 
     cali::ConfigManager mgr;
-    mgr.add(argv[1]);
 
-    // Check for configuration errors
+    if (argc > 1)
+        mgr.add(argv[1]);
     if (mgr.error())
-        std::cerr "Caliper error: " << mgr.error_msg() << std::endl;
+        std::cerr "Caliper config error: " << mgr.error_msg() << std::endl;
 
     // Start configured performance measurements, if any
     mgr.start();
@@ -54,12 +58,22 @@ int main(int argc, char* argv[])
 }
 ```
 
+We can now use a command-line argument instead of the `CALI_CONFIG` environment
+variable to enable profiling:
+
+    $ basic_example runtime-report
+    Path        Time (E) Time (I) Time % (E) Time % (I) 
+    main        0.000020 0.000224   1.998002  22.377622 
+      main loop 0.000015 0.000023   1.498501   2.297702 
+        bar     0.000006 0.000006   0.599401   0.599401 
+        foo     0.000002 0.000002   0.199800   0.199800 
+      setup     0.000181 0.000181  18.081918  18.081918 
+
 ## ConfigManager in LULESH
 
 The LULESH example app uses ConfigManager. LULESH's command-line parsing was
 extended so that the `-P` argument can be used to specify a Caliper profiling 
-configuration. Instead of `CALI_CONFIG`, we can now enable profiling through
-the command line:
+configuration:
 
     $ lulesh2.0 -i 10 -P runtime-report
     [...]

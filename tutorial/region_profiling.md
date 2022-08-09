@@ -97,14 +97,14 @@ import the *caliper* CMake package and link our program with the *caliper*
 target, as shown in the [CMakeLists.txt](../apps/basic_example/CMakeLists.txt)
 file of our example project:
 
-  find_package(caliper REQUIRED)
-  add_executable(basic_example basic_example.cpp)
-  target_link_libraries(basic_example caliper)
+    find_package(caliper REQUIRED)
+    add_executable(basic_example basic_example.cpp)
+    target_link_libraries(basic_example caliper)
 
 Without CMake, link the `libcaliper.so` library to the target code:
 
-  CALIPER_DIR=/path/to/caliper/installation
-  g++ -I${CALIPER_DIR}/include -L${CALIPER_DIR}/lib64 -lcaliper
+    CALIPER_DIR=/path/to/caliper/installation
+    g++ -I${CALIPER_DIR}/include -L${CALIPER_DIR}/lib64 -lcaliper
 
 ## Region profiling with runtime-report
 
@@ -148,7 +148,7 @@ the *output* parameter redirects output to a file (or stdout, or stderr):
         foo     0.000002 0.000002   0.184162   0.184162
       setup     0.000174 0.000174  16.022099  16.022099
 
-Similarly, the *region.count* parameter shows the number of times each region
+The *region.count* parameter shows the number of times each region
 was called:
 
     $ CALI_CONFIG=runtime-report,region.count basic_example
@@ -180,6 +180,49 @@ their parameters. Note that some of the options have additional Caliper build
 dependencies.
 You can find more information about Caliper's built-in measurement recipes
 [here](https://software.llnl.gov/Caliper/BuiltinConfigurations.html).
+
+### Diagnostics
+
+You can enable Caliper diagnostics with the `CALI_LOG_VERBOSITY` environment
+variable. It is set to 0 by default to disable any Caliper log output except
+for critical errors. Increasing the log level shows what Caliper is doing,
+which can be very helpful for diagnosing problems or submitting bug reports:
+
+    $ CALI_CONFIG=runtime-report CALI_LOG_VERBOSITY=1 basic_example
+    == CALIPER: Initialized
+    == CALIPER: Creating channel default
+    == CALIPER: default: No services enabled, default channel will not record data.
+    == CALIPER: Creating channel builtin.configmgr
+    == CALIPER: builtin.configmgr: Registered MPI service
+    == CALIPER: builtin.configmgr: Registered mpiflush service
+    == CALIPER: Creating channel runtime-report
+    == CALIPER: runtime-report: Registered aggregation service
+    == CALIPER: runtime-report: Registered event trigger service
+    == CALIPER: runtime-report: Registered report service
+    == CALIPER: runtime-report: Registered timestamp service
+    == CALIPER: Registered builtin ConfigManager
+    == CALIPER: Finalizing ... 
+    == CALIPER: default: Flushing Caliper data
+    == CALIPER: Releasing channel default
+    == CALIPER: builtin.configmgr: Flushing Caliper data
+    == CALIPER: runtime-report: Flushing Caliper data
+    == CALIPER: runtime-report: Aggregate: flushed 6 snapshots.
+    Path        Time (E) Time (I) Time % (E) Time % (I) 
+    main        0.000020 0.000120   2.427184  14.563107 
+      main loop 0.000025 0.000036   3.033981   4.368932 
+        bar     0.000006 0.000006   0.728155   0.728155 
+        foo     0.000005 0.000005   0.606796   0.606796 
+      setup     0.000064 0.000064   7.766990   7.766990 
+    == CALIPER: Releasing channel builtin.configmgr
+    == CALIPER: Releasing channel runtime-report
+    == CALIPER: Finished
+
+## Summary
+
+* Use Caliper annotation macros like CALI_MARK_BEGIN and CALI_MARK_END to instrument user-defined code regions
+* Use the `CALI_CONFIG` environment variable to activate one of Caliper's built-in measurement recipes
+* The `runtime-report` recipe collects and prints the time in the instrumented regions
+* You can add additional options like `region.count` to most recipes
 
 [Next - Profiling an MPI program](profiling_mpi.md)
 
