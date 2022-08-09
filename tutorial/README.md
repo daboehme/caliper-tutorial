@@ -138,11 +138,11 @@ demonstrate various Caliper capabilities:
     A simple example program demonstrating Caliper source-code instrumentation
     and the ConfigManager API.
 
-* [LULESH](../apps/LULESH/)
+* [LULESH](https://github.com/daboehme/LULESH/tree/adiak-caliper-support)
 
     A C++ HPC proxy app demonstrating Caliper with an MPI code.
 
-* [XSBench](../apps/XSBench/)
+* [XSBench](https://github.com/daboehme/XSBench/tree/caliper-support)
 
     A CUDA proxy application for demonstrating the use of Caliper with GPUs.
 
