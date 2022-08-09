@@ -99,6 +99,13 @@ in the documentation to learn more.
 
 ### Tutorial setup
 
+In the **RADIUSS AWS environment**, run the setup script:
+
+    source /opt/setup-tutorial.sh
+
+*Otherwise* (i.e., outside of the RADIUSS AWS environment), follow
+the instructions below:
+
 Clone the tutorial repository, then source `setup-env.sh` to build the tutorial
 examples:
 

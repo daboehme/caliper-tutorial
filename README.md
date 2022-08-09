@@ -4,6 +4,12 @@ This repository contains tutorial materials for
 [Caliper](https://github.com/LLNL/Caliper), a performance instrumentation and
 profiling library.
 
+In the **RADIUSS AWS environment**, run the setup script:
+
+    source /opt/setup-tutorial.sh
+
+*Otherwise*, follow the instructions below:
+
 The repository contains submodules. Clone with `--recursive` to check out all 
 submodules, then source `setup-env.sh` to build the codes and examples:
 
