@@ -174,4 +174,6 @@ For *bug reports*, please use the Github issue tracker:
 
 * [Analyzing data with Hatchet](recording_hatchet.md) shows how to record data for custom analyses with [Hatchet](https://github.com/LLNL/hatchet).
 
+* [Analyzing data with cali-query](analyzing_with_caliquery.md) demonstrates the *cali-query* tool for processing Caliper data.
+
 * [Analyzing CUDA codes](analyzing_cuda_codes.md) shows options to profile CUDA programs with Caliper.

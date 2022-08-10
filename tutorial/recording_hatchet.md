@@ -11,12 +11,12 @@ You can install Hatchet via PyPi:
 
     pip3 install llnl-hatchet
 
-You find detailed documentation for Hatchet here: 
+You find detailed documentation for Hatchet here:
 <https://llnl-hatchet.readthedocs.io/>
 
 ## Recording data for Hatchet
 
-We can record data for Hatchet with Caliper's `hatchet-region-profile` config 
+We can record data for Hatchet with Caliper's `hatchet-region-profile` config
 recipe:
 
     $ lulesh2.0 -P hatchet-region-profile
@@ -24,7 +24,7 @@ recipe:
     $ ls region_profile.json
     region_profile.json
 
-This produces a `region_profile.json` JSON file, which we can import into 
+This produces a `region_profile.json` JSON file, which we can import into
 Hatchet. Note that you can change the filename with the `output` option:
 
     $ lulesh2.0 -P hatchet-region-profile,output=lulesh.json
@@ -42,10 +42,10 @@ including MPI and CUDA profiling:
 
 ## Importing the data
 
-Check out the [notebook](HatchetCaliperImport.ipynb) or the Python 
-[source](hatchet_caliper_import.py) the for the example code!
+Check out the [notebook](HatchetCaliperImport.ipynb) or the Python
+[source](hatchet_caliper_import.py) for the example code!
 
-We can import the JSON file into a Hatchet GraphFrame with the 
+We can import the JSON file into a Hatchet GraphFrame with the
 `from_caliper` reader. Internally, Hatchet stores the recorded region
 hierarchy in a tree structure and the associated performance metrics
 in a Pandas dataframe.
@@ -88,7 +88,7 @@ The JSON file also contains the Adiak metadata. Hatchet stores this data in the
 30
 ```
 
-Alternatively, we can read the Adiak metadata from the JSON file directly, 
+Alternatively, we can read the Adiak metadata from the JSON file directly,
 where the Adiak keys are stored as top-level entries in the JSON object. We can
 access them with the JSON reader:
 
@@ -99,6 +99,27 @@ access them with the JSON reader:
 '30'
 ```
 
-[Next - Analyzing CUDA codes](analyzing_cuda_codes.md)
+## Comparing runs
+
+Hatchet has rich functionality for comparing graph frames. As an example, we
+can load profiles for a single-rank and an eight-rank MPI run of Lulesh, and
+divide the two graph frames to determine the scaling performance:
+
+```Python
+import hatchet
+
+gf1 = hatchet.GraphFrame.from_caliper("data/lulesh_mpi_x1.json")
+gf8 = hatchet.GraphFrame.from_caliper("data/lulesh_mpi_x8.json")
+
+gfd = gf1 / gf8
+
+print(gfd.tree(invert_colormap=True))
+```
+
+Run the [hatchet_comparison.py](hatchet_comparison.py) script to see the
+result. Our data is a weak scaling example (i.e., a constant amount of work per
+process), so values around 1.0 indicate good scalability.
+
+[Next - Analyzing Data with cali-query](analyzing_with_caliquery.md)
 
 [Back to Table of Contents](README.md#tutorial-contents)
