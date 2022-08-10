@@ -7,7 +7,8 @@ A popular option is
 [Hatchet](https://github.com/LLNL/hatchet), a Python library for analyzing
 hierarchical performance data, such as Caliper's region profiles.
 
-You can install Hatchet via PyPi:
+The **RADIUSS AWS instances** have Hatchet installed. *Otherwise*,
+you can install Hatchet via PyPi:
 
     pip3 install llnl-hatchet
 
