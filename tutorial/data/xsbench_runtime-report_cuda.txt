@@ -1,0 +1,73 @@
+cali.caliper.version : 2.8.0
+grid                 : unionized
+version              :         20 
+threads              :          1 
+kernel               :          4 
+nuclides             :         68 
+materials            :         12 
+size                 : small
+method               : event
+user                 : boehme3
+launchdate           : 1660075793 
+jobsize              :          1 
+cluster              : lassen
+executable           : XSBench
+cmdline              : [XSBench,-k,4,-s,small,-m~~_runtime-report_cuda.txt]
+cali.channel         : runtime-report
+Path                                             Time (E) Time (I) Time % (E) Time % (I) 
+main                                             0.120453 0.646086  18.636426  99.962094 
+  simulation                                     0.000037 0.125419   0.005725  19.404763 
+    run_event_based_simulation_optimization_4    0.000060 0.125382   0.009283  19.399039 
+      verification                               0.000135 0.000461   0.020887   0.071326 
+        cudaDeviceSynchronize                    0.000013 0.000013   0.002011   0.002011 
+        cudaFree                                 0.000013 0.000013   0.002011   0.002011 
+        cudaMemcpyAsync                          0.000023 0.000023   0.003559   0.003559 
+        cudaStreamSynchronize                    0.000117 0.000117   0.018102   0.018102 
+        cudaPeekAtLastError                      0.000013 0.000013   0.002011   0.002011 
+        cudaLaunchKernel                         0.000028 0.000028   0.004332   0.004332 
+        cudaMalloc                               0.000011 0.000011   0.001702   0.001702 
+        cudaOccupancyMaxAct~~iprocessorWithFlags 0.000007 0.000007   0.001083   0.001083 
+        cudaDeviceGetAttribute                   0.000006 0.000006   0.000928   0.000928 
+        cudaGetLastError                         0.000078 0.000078   0.012068   0.012068 
+        cudaGetDevice                            0.000017 0.000017   0.002630   0.002630 
+      lookup_kernel                              0.000042 0.107708   0.006498  16.664526 
+        cudaDeviceSynchronize                    0.107546 0.107546  16.639462  16.639462 
+        cudaPeekAtLastError                      0.000003 0.000003   0.000464   0.000464 
+        cudaLaunchKernel                         0.000117 0.000117   0.018102   0.018102 
+      sort                                       0.000150 0.007407   0.023208   1.146007 
+        cudaStreamSynchronize                    0.000010 0.000010   0.001547   0.001547 
+        cudaFree                                 0.002865 0.002865   0.443271   0.443271 
+        cudaPeekAtLastError                      0.000016 0.000016   0.002476   0.002476 
+        cudaLaunchKernel                         0.000057 0.000057   0.008819   0.008819 
+        cudaOccupancyMaxAct~~iprocessorWithFlags 0.000003 0.000003   0.000464   0.000464 
+        cudaDeviceGetAttribute                   0.000003 0.000003   0.000464   0.000464 
+        cudaMemsetAsync                          0.000060 0.000060   0.009283   0.009283 
+        cudaMalloc                               0.004163 0.004163   0.644097   0.644097 
+        cudaGetLastError                         0.000071 0.000071   0.010985   0.010985 
+        cudaGetDevice                            0.000009 0.000009   0.001392   0.001392 
+      count                                      0.001412 0.003873   0.218464   0.599229 
+        cudaFree                                 0.000153 0.000153   0.023672   0.023672 
+        cudaMemcpyAsync                          0.000241 0.000241   0.037287   0.037287 
+        cudaStreamSynchronize                    0.000526 0.000526   0.081382   0.081382 
+        cudaPeekAtLastError                      0.000126 0.000126   0.019495   0.019495 
+        cudaLaunchKernel                         0.000256 0.000256   0.039608   0.039608 
+        cudaMalloc                               0.000099 0.000099   0.015317   0.015317 
+        cudaOccupancyMaxAct~~iprocessorWithFlags 0.000076 0.000076   0.011759   0.011759 
+        cudaDeviceGetAttribute                   0.000061 0.000061   0.009438   0.009438 
+        cudaFuncGetAttributes                    0.000007 0.000007   0.001083   0.001083 
+        cudaGetDeviceCount                       0.000004 0.000004   0.000619   0.000619 
+        cudaGetLastError                         0.000786 0.000786   0.121610   0.121610 
+        cudaGetDevice                            0.000126 0.000126   0.019495   0.019495 
+      sampling_kernel                            0.000020 0.001543   0.003094   0.238732 
+        cudaDeviceSynchronize                    0.001480 0.001480   0.228985   0.228985 
+        cudaPeekAtLastError                      0.000003 0.000003   0.000464   0.000464 
+        cudaLaunchKernel                         0.000040 0.000040   0.006189   0.006189 
+      cudaMalloc                                 0.004330 0.004330   0.669935   0.669935 
+  move_simulation_data_to_device                 0.000134 0.100944   0.020732  15.618004 
+    cudaDeviceSynchronize                        0.000026 0.000026   0.004023   0.004023 
+    cudaPeekAtLastError                          0.000004 0.000004   0.000619   0.000619 
+    cudaMemcpy                                   0.019892 0.019892   3.077680   3.077680 
+    cudaMalloc                                   0.080888 0.080888  12.514950  12.514950 
+  grid_init_do_not_profile                       0.298937 0.298937  46.251379  46.251379 
+  cudaGetDeviceProperties                        0.000319 0.000319   0.049356   0.049356 
+  cudaGetDevice                                  0.000014 0.000014   0.002166   0.002166 

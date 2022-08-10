@@ -1,15 +1,30 @@
 # Analyzing Data with Hatchet
 
-[Hatchet](https://github.com/LLNL/hatchet) is a Python library for analyzing
-hierarchical performance data, such as Caliper's region profiles. We can 
-record data for Hatchet with Caliper's `hatchet-region-profile` config:
+Caliper can produce various machine-readable output formats for processing and
+analyzing performance data with standard data analysis tools.
+
+A popular option is
+[Hatchet](https://github.com/LLNL/hatchet), a Python library for analyzing
+hierarchical performance data, such as Caliper's region profiles.
+
+You can install Hatchet via PyPi:
+
+    pip3 install llnl-hatchet
+
+You find detailed documentation for Hatchet here:
+<https://llnl-hatchet.readthedocs.io/>
+
+## Recording data for Hatchet
+
+We can record data for Hatchet with Caliper's `hatchet-region-profile` config
+recipe:
 
     $ lulesh2.0 -P hatchet-region-profile
     [...]
     $ ls region_profile.json
     region_profile.json
 
-This produces a `region_profile.json` JSON file, which we can import into 
+This produces a `region_profile.json` JSON file, which we can import into
 Hatchet. Note that you can change the filename with the `output` option:
 
     $ lulesh2.0 -P hatchet-region-profile,output=lulesh.json
@@ -17,9 +32,7 @@ Hatchet. Note that you can change the filename with the `output` option:
     $ ls lulesh.json
     lulesh.json
 
-## Profiling options
-
-The `hatchet-region-profile` config supports many Caliper profiling options,
+The `hatchet-region-profile` recipe supports many Caliper profiling options,
 including MPI and CUDA profiling:
 
     $ mpirun -n 8 lulesh2.0 -P hatchet-region-profile,profile.mpi,output=lulesh_mpi_x8.json
@@ -29,14 +42,19 @@ including MPI and CUDA profiling:
 
 ## Importing the data
 
-Check out the [notebook](HatchetCaliperImport.ipynb) for the example code!
+Check out the [notebook](HatchetCaliperImport.ipynb) or the Python
+[source](hatchet_caliper_import.py) for the example code!
 
-We can import the JSON file into a Hatchet GraphFrame with the 
-`from_caliper_json` reader:
+We can import the JSON file into a Hatchet GraphFrame with the
+`from_caliper` reader. Internally, Hatchet stores the recorded region
+hierarchy in a tree structure and the associated performance metrics
+in a Pandas dataframe.
+
+Here, we load the region profile file and display the Hatchet dataframe:
 
 ```
 >>> import hatchet
->>> gf = hatchet.GraphFrame.from_caliper_json('region_profile.json')
+>>> gf = hatchet.GraphFrame.from_caliper('region_profile.json')
 >>> gf.dataframe
 node                                                    time  nid                             name
 {'name': 'main', 'type': 'region'}                  0.005730    0                             main
@@ -62,17 +80,46 @@ node                                                    time  nid               
 
 ## Extracting metadata
 
-The JSON file also contains the Adiak metadata. The metadata entries are stored
-as top-level entries in the JSON object. We can access them with the JSON
-reader:
+The JSON file also contains the Adiak metadata. Hatchet stores this data in the
+`metadata` attribute of the GraphFrame object, which is just a simple dict:
 
+```Python
+>>> int(gf.metadata['problem_size'])
+30
 ```
+
+Alternatively, we can read the Adiak metadata from the JSON file directly,
+where the Adiak keys are stored as top-level entries in the JSON object. We can
+access them with the JSON reader:
+
+```Python
 >>> import json
 >>> obj = json.load(open('region_profile.json))
 >>> obj['problem_size']
 '30'
 ```
 
-[Next - Analyzing CUDA codes](analyzing_cuda_codes.md)
+## Comparing runs
+
+Hatchet has rich functionality for comparing graph frames. As an example, we
+can load profiles for a single-rank and an eight-rank MPI run of Lulesh, and
+divide the two graph frames to determine the scaling performance:
+
+```Python
+import hatchet
+
+gf1 = hatchet.GraphFrame.from_caliper("data/lulesh_mpi_x1.json")
+gf8 = hatchet.GraphFrame.from_caliper("data/lulesh_mpi_x8.json")
+
+gfd = gf1 / gf8
+
+print(gfd.tree(invert_colormap=True))
+```
+
+Run the [hatchet_comparison.py](hatchet_comparison.py) script to see the
+result. Our data is a weak scaling example (i.e., a constant amount of work per
+process), so values around 1.0 indicate good scalability.
+
+[Next - Analyzing Data with cali-query](analysis_with_caliquery.md)
 
 [Back to Table of Contents](README.md#tutorial-contents)
