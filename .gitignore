@@ -2,3 +2,4 @@ build/
 install/
 venv/
 **/.ipynb_checkpoints
+**/.pyc
