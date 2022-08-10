@@ -120,6 +120,6 @@ Run the [hatchet_comparison.py](hatchet_comparison.py) script to see the
 result. Our data is a weak scaling example (i.e., a constant amount of work per
 process), so values around 1.0 indicate good scalability.
 
-[Next - Analyzing Data with cali-query](analyzing_with_caliquery.md)
+[Next - Analyzing Data with cali-query](analysis_with_caliquery.md)
 
 [Back to Table of Contents](README.md#tutorial-contents)
