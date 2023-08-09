@@ -41,7 +41,7 @@ echo "Install directory: ${INSTALL_DIR}"
 
 export CMAKE_PREFIX_PATH="${INSTALL_DIR};${CMAKE_PREFIX_PATH}"
 
-( cd ${ROOT_DIR} ; git submodule update --init --recursive )
+( cd ${ROOT_DIR} ; git submodule update --init --recursive --remote)
 
 mkdir -p "$BUILD_DIR" || exit 1
 
