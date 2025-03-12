@@ -59,9 +59,13 @@ int main(int argc, char* argv[])
     //   (Optional) Record some program metadata with Adiak. This lets us
     // save environment and program configuration information together with
     // the performance data.
-    adiak::executable();
-    adiak::hostname();
-    adiak::launchdate();
+    //   Adiak has built-in functions to collect common system and environment
+    // information, such as the command-line arguments, the hostname,
+    // launch date/time, and number of MPI ranks. The adiak::collect_all()
+    // function collects all available built-in values. In addition, we record
+    // application-specific information, like in this case the "number of
+    // iterations" input value, with the adiak::value() function.
+    adiak::collect_all();
     adiak::value("iterations", N);
 
     CALI_MARK_END("setup");
