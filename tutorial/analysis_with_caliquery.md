@@ -70,6 +70,6 @@ This example just gives you an idea of what the query system can do. It is
 most useful when creating custom configuration recipes - however, these are
 outside of the scope of this tutorial.
 
-[Next - Analyzing CUDA codes](analyzing_cuda_codes.md)
+[Next - Profiling MPI programs](profiling_mpi.md)
 
 [Back to Table of Contents](README.md#tutorial-contents)

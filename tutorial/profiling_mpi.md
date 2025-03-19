@@ -191,6 +191,6 @@ Recipes and options for MPI profiling:
 * mpi.message.count
   * Collect statistics for the number of MPI messages sent and received
 
-[Next - Recording Program Metadata](recording_metadata.md)
+[Next - Analyzing CUDA codes](analyzing_cuda_codes.md)
 
 [Back to Table of Contents](README.md#tutorial-contents)

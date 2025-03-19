@@ -1,4 +1,4 @@
-# Analyzing CUDA codes
+# Analyzing GPU codes
 
 Here, you'll learn how you can analyze CUDA programs with Caliper. To follow 
 along, you can build the tutorial example apps with the "cuda" build 

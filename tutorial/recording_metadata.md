@@ -1,10 +1,36 @@
-# Recording Program Metadata with Adiak
+# Recording Program Metadata
 
 Caliper is often used for performance comparison studies involving large
 collections of runs - for example, automatic performance regression testing,
-scaling studies, or comparing different program configurations. To do this
-efficiently, Caliper needs to record not only the performance data itself, but
-also program metadata that describes each run.
+scaling studies, or comparing different program configurations. To that end,
+Caliper can store metadata name-value pairs to describe and distinguish
+performance profiles from different runs.
+
+There are several complementary ways to record metadata name-value pairs
+in a Caliper profile:
+
+* Using the Adiak library
+* Using Caliper's metadata name-value API
+* Providing metadata name-value pairs in the Caliper config string
+* Reading metadata name-value pairs from a JSON file
+
+We recommend using Adiak, which provides a user-friendly API as well as
+built-in functionality to record common information provided by the OS
+and runtime systems.
+Generally, we recommend recording any variables that are relevant to
+distinguishing and understanding the run generating the performance
+profile, such as:
+
+* The version / build date / git hash of the code
+* Build information, like the compiler and optimization level used
+* Versions of important libraries
+* Application configuration and input parameters, such as problem size and
+  decomposition settings, enabled physics packages, algorithms used, etc.
+* Machine and execution information, e.g. OS version, machine name,
+  date/time of the run
+* Information about the kind/purpose of the run, such as a test or experiment
+  name
+* Application-generated figure-of-merit metrics
 
 ## The Adiak library
 
