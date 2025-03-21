@@ -9,7 +9,7 @@ performance profiles from different runs.
 There are several complementary ways to record metadata name-value pairs
 in a Caliper profile:
 
-* Using the Adiak library
+* Using the [Adiak](https://github.com/LLNL/Adiak) library
 * Using Caliper's metadata name-value API
 * Providing metadata name-value pairs in the Caliper config string
 * Reading metadata name-value pairs from a JSON file
@@ -32,97 +32,134 @@ profile, such as:
   name
 * Application-generated figure-of-merit metrics
 
-## The Adiak library
+## Using Adiak
 
 Caliper works together with [Adiak](https://github.com/LLNL/Adiak), a C/C++
-library to record program metadata. This data helps us with comparisons across
-runs - for example, comparing performance between different machines or
-different program configurations.
+library to record program metadata. Detailed documentation for Adiak is
+available [here](https://software.llnl.gov/Adiak). This section covers basic
+use of Adiak for recording run metadata in an application.
 
-Adiak has two types of functions. First, there is built-in functionality
-to record common metadata attributes. These functions record things like
-the user name, executable name, launch date, etc.:
+To use Adiak, an application first initializes Adiak and then registers
+name-value pairs with Adiak's data collection API.
+Caliper automatically imports all name-value pairs collected with Adiak as run
+metadata in .cali or .json output files. It can also be printed in text-based
+recipes like runtime-report with the `print.metadata` option, e.g.
+`CALI_CONFIG=runtime-report,print.metadata`.
 
-```c
-int adiak_user();  /* Makes a 'user' name/val with the real name of who's running the job */
-int adiak_uid(); /* Makes a 'uid' name/val with the uid of who's running the job */
-int adiak_launchdate(); /* Makes a 'launchdate' name/val with the date of when this job started */
-int adiak_launchday(); /* Makes a 'launchday' name/val with date when this job started, but truncated to midnight */
-int adiak_executable(); /* Makes an 'executable' name/val with the executable file for this job */
-int adiak_executablepath(); /* Makes an 'executablepath' name/value with the full executable file path. */
-int adiak_workdir(); /* Makes a 'working_directory' name/val with the cwd for this job */
-int adiak_libraries(); /* Makes a 'libraries' name/value with the set of shared library paths. */
-int adiak_cmdline(); /* Makes a 'cmdline' name/val string set with the command line parameters */
-int adiak_hostname(); /* Makes a 'hostname' name/val with the hostname */
-int adiak_clustername(); /* Makes a 'cluster' name/val with the cluster name (hostname with numbers stripped) */
-int adiak_walltime(); /* Makes a 'walltime' name/val with the walltime how long this job ran */
-int adiak_systime(); /* Makes a 'systime' name/val with the timeval of how much time was spent in IO */
-int adiak_cputime(); /* Makes a 'cputime' name/val with the timeval of how much time was spent on the CPU */
+### Adding Adiak to an application build system
 
-int adiak_job_size(); /* Makes a 'jobsize' name/val with the number of ranks in an MPI job */
-int adiak_hostlist(); /* Makes a 'hostlist' name/val with the set of hostnames in this MPI job */
-int adiak_num_hosts(); /* Makes a 'numhosts' name/val with the number of hosts in this MPI job */
-```
+Like Caliper, Adiak provides a CMake package file. The Adiak CMake package
+contains the `adiak::adiak` target, which should be linked to the target code:
 
-Second, there is a key-value interface for custom data.
-This is useful to record program-specific information, like input parameters
-and configuration settings. In C, we can do this with the `adiak_namevalue`
-function. It supports many different data types and uses a printf-style type
-descriptor to describe the data types. Supported data types include integers
-(`%d`, `%u`), strings (`%s`), specialized strings like program versions
-(`%v`), and even compound types like arrays and structs:
+    find_package(adiak)
+    target_link_libraries(basic_example adiak::adiak)
 
-```c
-/**
- * adiak_namevalue registers a name/value pair.  The printf-style typestr describes the type of the
- * value, which is constructed from the string specifiers above.  The varargs contains parameters
- * for the type.  The entire type describes how value is encoded.  For example:
- *
- * adiak_namevalue("numrecords", adiak_general, NULL, "%d", 10);
- *
- * adiak_namevalue("buildcompiler", adiak_general, NULL, "%v", "gcc@4.7.3");
- *
- * double gridvalues[] = { 5.4, 18.1, 24.0, 92.8 };
- * adiak_namevalue("gridvals", adiak_general, NULL, "[%f]", gridvalues, 4);
- *
- * struct { int pos; const char *val; } letters[3] = { {1, 'a'}, {2, 'b'}, {3, 'c} }
- * adiak_namevalue("alphabet", adiak_general, NULL, "[(%u, %s)]", letters, 3, 2);
- **/
-int adiak_namevalue(const char *name, int category, const char *subcategory, const char *typestr, ...);
-```
+The Adiak CMake package file lives in `lib/cmake/adiak` inside the Adiak
+installation directory. Set `-Dadiak_DIR` to point CMake to the Adiak package:
 
-A simpler form is available for C++:
+    $ cmake -Dadiak_DIR=/path-to-adiak/lib/cmake/adiak
 
-```c++
-adiak::value("key", value);
-```
+C++ source files using Adiak should include `adiak.hpp`. C sources should
+include `adiak.h`.
 
-This template function automatically deduces a suitable Adiak datatype from
-the given `value` parameter. It works for most built-in types like integers
-and strings, as well as certain compound types like `std::vector`.
+### Initializing and finalizing Adiak
 
-## A simple example
+Adiak should be initialized with `adiak::init(void*)` (in C++) or
+`adiak_init(void*)` (in C). The initialization function takes a pointer to
+an MPI communicator, or `nullptr` in a non-MPI program. Initializing
+Adiak with an MPI communicator allows it to collect certain MPI-specific
+information, such as the MPI job size and MPI library version.
 
-The [basic example](../apps/basic_example/basic_example.cpp) program shows how
-we record program information with Adiak in C++. We use Adiak's built-in
-functionality to record the executable name, host name, and launch date, and
-the `adiak::value()` function to record the selected number of
-main loop iterations in this run:
+At exit, Adiak should be finalized with `adiak::fini()` in C++ or `adiak_fini()`
+in C. Calling fini is important for collecting end-of-process data (such as job
+runtime) and flushing data. If used in an MPI-enabled adiak, then fini should be
+called before MPI_Finalize():
 
 ```c++
 #include <adiak.hpp>
 
-adiak::executable();
-adiak::hostname();
-adiak::launchdate();
-adiak::value("iterations", N);
+int main(int argc, char* argv[])
+{
+    MPI_Init(&argc, &argv);
+    MPI_Comm adk_comm = MPI_COMM_WORLD;
+    // Pass a pointer to an MPI communicator or NULL to skip MPI support
+    adiak::init(&adk_comm);
+    // ...
+    adiak::fini(); // Call adiak::fini() before MPI_Finalize
+    MPI_Finalize();
+}
 ```
 
-When using CMake, we can build a program with Adiak support by adding the
-`adiak::adiak` target as a dependency:
+### Recording name-value pairs
 
-    find_package(adiak)
-    target_link_libraries(basic_example adiak::adiak)
+Adiak has two types of functions:
+
+* An implicit interface to collect system-level values stored under standardized names
+* An explicit interface to collect application-level data under user-defined names
+
+The implicit interface has a set of functions like `adiak::launchdate()` or
+`adiak::user()` to collect system-provided information like the launch date or
+user name. A complete list of functions is available in the Adiak
+documentation. We recommend using the convenient collect_all shorthand, which
+collects all available implicit Adiak variables:
+
+```c++
+bool adiak::collect_all(); // C++ version to collect all implicit Adiak variables
+int adiak_collect_all(); // C version
+```
+
+Program-specific data can be recorded with the `adiak::value` template in C++.
+It takes two required and two optional parameters:
+
+* The name under which the value is stored
+* The value. Adiak accepts many C++ datatypes, including compound types like STL vectors.
+* (Optional) a category. Typical run metadata should use the default `adiak_general` category.
+* (Optional) a user-defined subcategory. Typically left empty.
+
+```c++
+template<typename T>
+bool value(std::string name, T value, int category = adiak_general, std::string subcategory = "")
+```
+
+Adiak's internal type system supports many common datatypes, including
+integrals (integers and floating-point values), strings, UNIX time objects,
+as well as compound types like lists and tuples. There are also specialized
+types such as "path" and "version" for strings that represent file paths or
+program versions, respectively. The `adiak::value` template automatically 
+derives an appropriate Adiak datatype from the passed-in value. There are also
+converters like `adiak::path` and `adiak::version` to convert strings to the
+specialized "path" and "version" types. Here are a few examples:
+
+```c++
+adiak::value("maxtemperature", 70.2);
+adiak::value("compiler", adiak::version("gcc@13.3.0"));
+adiak::value("input_file", adiak::path("/home/user/in.dat"));
+
+std::array<int, 3> dims = { 8, 8, 16 };
+adiak::value("dimensions", dims);
+```
+
+In C, adiak provides the `adiak_namevalue` function, which uses a printf-style
+type descriptor to describe the desired datatype:
+
+```c
+int adiak_namevalue(const char *name, int category, const char *subcategory, const char *typestr, ...);
+```
+
+Supported data types include integers (`%d`, `%u`), strings (`%s`), specialized 
+strings like program versions (`%v`), and even compound types like arrays and
+structs:
+
+```c
+adiak_namevalue("numrecords", adiak_general, NULL, "%d", 10);
+adiak_namevalue("buildcompiler", adiak_general, NULL, "%v", "gcc@4.7.3");
+
+double gridvalues[] = { 5.4, 18.1, 24.0, 92.8 };
+adiak_namevalue("gridvals", adiak_general, NULL, "[%f]", gridvalues, 4);
+
+struct { int pos; const char *val; } letters[3] = { {1, 'a'}, {2, 'b'}, {3, 'c'} };
+adiak_namevalue("alphabet", adiak_general, NULL, "[(%u, %s)]", letters, 3, 2);
+```
 
 ## Viewing program metadata
 
@@ -162,16 +199,9 @@ extern const char* buildMetadata[][2];
 
 void RecordGlobals(const cmdLineOpts& opts, int num_threads)
 {
-    adiak::user();
-    adiak::launchdate();
-    adiak::executablepath();
-    adiak::libraries();
-    adiak::cmdline();
-    adiak::clustername();
-    adiak::jobsize();
+    adiak::collect_all();
 
     adiak::value("threads", num_threads);
-
     adiak::value("iterations", opts.its);
     adiak::value("problem_size", opts.nx);
     adiak::value("num_regions", opts.numReg);

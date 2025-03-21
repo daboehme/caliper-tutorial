@@ -61,6 +61,11 @@ Without CMake, link the `libcaliper.so` library to the target code:
     CALIPER_DIR=/path/to/caliper/installation
     g++ -I${CALIPER_DIR}/include -L${CALIPER_DIR}/lib64 -lcaliper
 
+C and C++ source files should include `caliper/cali.h` for the instrumentation
+calls:
+
+    #include <caliper/cali.h>
+
 ## Instrumenting regions
 
 Much of Caliper's functionality is built around region instrumentation. We

@@ -65,6 +65,8 @@ int main(int argc, char* argv[])
     // function collects all available built-in values. In addition, we record
     // application-specific information, like in this case the "number of
     // iterations" input value, with the adiak::value() function.
+    adiak::init(nullptr);
+
     adiak::collect_all();
     adiak::value("iterations", N);
 
@@ -82,6 +84,7 @@ int main(int argc, char* argv[])
 
     CALI_MARK_FUNCTION_END;
 
+    adiak::fini();
     // Flush output of configured profiling channels
     mgr.flush();
 
