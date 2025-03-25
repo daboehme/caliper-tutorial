@@ -10,7 +10,7 @@ There are several complementary ways to record metadata name-value pairs
 in a Caliper profile:
 
 * Using the [Adiak](https://github.com/LLNL/Adiak) library
-* Using Caliper's metadata name-value API
+* Using Caliper metadata attributes
 * Providing metadata name-value pairs in the Caliper config string
 * Reading metadata name-value pairs from a JSON file
 
@@ -39,8 +39,11 @@ library to record program metadata. Detailed documentation for Adiak is
 available [here](https://software.llnl.gov/Adiak). This section covers basic
 use of Adiak for recording run metadata in an application.
 
-To use Adiak, an application first initializes Adiak and then registers
-name-value pairs with Adiak's data collection API.
+At its core, Adiak is an in-memory key-value store. To use Adiak, an application 
+first initializes Adiak and then registers name-value pairs with Adiak's data
+collection API. By default, Adiak makes deep copies of all passed-in values: it
+is intended collecting descriptive run metadata, not for storing large datasets.
+
 Caliper automatically imports all name-value pairs collected with Adiak as run
 metadata in .cali or .json output files. It can also be printed in text-based
 recipes like runtime-report with the `print.metadata` option, e.g.
@@ -108,18 +111,19 @@ bool adiak::collect_all(); // C++ version to collect all implicit Adiak variable
 int adiak_collect_all(); // C version
 ```
 
-Program-specific data can be recorded with the `adiak::value` template in C++.
+Program-specific data can be recorded with the `adiak::value` template in C++:
+
+```c++
+template<typename T>
+bool value(std::string name, T value, int category = adiak_general, std::string subcategory = "")
+```
+
 It takes two required and two optional parameters:
 
 * The name under which the value is stored
 * The value. Adiak accepts many C++ datatypes, including compound types like STL vectors.
 * (Optional) a category. Typical run metadata should use the default `adiak_general` category.
 * (Optional) a user-defined subcategory. Typically left empty.
-
-```c++
-template<typename T>
-bool value(std::string name, T value, int category = adiak_general, std::string subcategory = "")
-```
 
 Adiak's internal type system supports many common datatypes, including
 integrals (integers and floating-point values), strings, UNIX time objects,
@@ -139,7 +143,7 @@ std::array<int, 3> dims = { 8, 8, 16 };
 adiak::value("dimensions", dims);
 ```
 
-In C, adiak provides the `adiak_namevalue` function, which uses a printf-style
+C programs should use the `adiak_namevalue` function, which uses a printf-style
 type descriptor to describe the desired datatype:
 
 ```c
@@ -148,7 +152,8 @@ int adiak_namevalue(const char *name, int category, const char *subcategory, con
 
 Supported data types include integers (`%d`, `%u`), strings (`%s`), specialized 
 strings like program versions (`%v`), and even compound types like arrays and
-structs:
+structs. See [adiak_namevalue](https://software.llnl.gov/Adiak/ApplicationAPI.html#_CPPv415adiak_namevaluePKciPKcPKcz)
+in the Adiak documentation for more details. Examples:
 
 ```c
 adiak_namevalue("numrecords", adiak_general, NULL, "%d", 10);
@@ -161,37 +166,13 @@ struct { int pos; const char *val; } letters[3] = { {1, 'a'}, {2, 'b'}, {3, 'c'}
 adiak_namevalue("alphabet", adiak_general, NULL, "[(%u, %s)]", letters, 3, 2);
 ```
 
-## Viewing program metadata
+### Example: LULESH
 
-Caliper configuration recipes that produce machine-readable output like
-*hatchet-region-profile* automatically include the collected Adiak values
-in their .json or .cali output files. We can also view the recorded
-metadata in *runtime-report* with the *print.metadata* option:
-
-    $ CALI_CONFIG=runtime-report,print.metadata basic_example
-    cali.caliper.version : 2.8.0
-    iterations           :          4
-    launchdate           : 1659921370
-    hostname             : gowron.dbonet
-    executable           : basic_example
-    cali.channel         : runtime-report
-    Path        Min time/rank Max time/rank Avg time/rank Time %
-    main             0.000025      0.000025      0.000025 1.712329
-      main loop      0.000014      0.000014      0.000014 0.958904
-        bar          0.000002      0.000002      0.000002 0.136986
-        foo          0.000002      0.000002      0.000002 0.136986
-      setup          0.000111      0.000111      0.000111 7.602740
-
-We see the recorded executable name, host name, launchdate (as a UNIX epoch
-stamp), iteration count, and some Caliper-provided metadata attributes
-like the Caliper version number and the profiling channel name.
-
-## Program metadata in LULESH
-
-In our LULESH example, we record various system and execution attributes
-(system name, number of MPI ranks, etc.), as well as program configuration
-settings like problem size and number of iterations. This is done in the
-`RecordGlobals` function in [lulesh-util.cc](https://github.com/daboehme/LULESH/blob/adiak-caliper-support/lulesh-util.cc):
+In our LULESH example, we use the `adiak::collect_all()` function to collect
+all Adiak-provided system and execution attributes. Then, we record 
+application-specific variables like the input problem size and number of 
+iterations with `adiak::value`. This is done in `RecordGlobals` in 
+[lulesh-util.cc](https://github.com/daboehme/LULESH/blob/adiak-caliper-support/lulesh-util.cc):
 
 ```c++
 // defined in lulesh-build-metadata.cc, which is generated by cmake
@@ -228,8 +209,8 @@ const char* buildMetadata[][2] = {
 };
 ```
 
-At the end of the run, we record a global "figure-of-merit" as well as the
-total elapsed time:
+Finally, we record a figure of merit as well as the total elapsed time
+for the run in the `VerifyAndWriteFinalOutput` function:
 
 ```c++
 adiak::value("elapsed_time", elapsed_time);
@@ -262,29 +243,16 @@ Path                                       Time (E) Time (I) Time % (E) Time % (
 main                                       0.004968 0.219693   2.226714  98.468910
   lulesh.cycle                             0.000042 0.214725   0.018825  96.242196
     LagrangeLeapFrog                       0.000031 0.214674   0.013895  96.219337
-      CalcTimeConstraintsForElems          0.001336 0.001336   0.598810   0.598810
-      LagrangeElements                     0.000190 0.096224   0.085160  43.128695
-        ApplyMaterialPropertiesForElems    0.000797 0.048494   0.357224  21.735564
-          EvalEOSForElems                  0.015742 0.047697   7.055744  21.378340
-            CalcEnergyForElems             0.031955 0.031955  14.322596  14.322596
-        CalcQForElems                      0.014044 0.020171   6.294681   9.040872
-          CalcMonotonicQForElems           0.006127 0.006127   2.746191   2.746191
-        CalcLagrangeElements               0.000838 0.027369   0.375601  12.267098
-          CalcKinematicsForElems           0.026531 0.026531  11.891497  11.891497
-      LagrangeNodal                        0.002712 0.117083   1.215549  52.477937
-        CalcForceForNodes                  0.000355 0.114371   0.159115  51.262387
-          CalcVolumeForceForElems          0.002560 0.114016   1.147421  51.103272
-            CalcHourglassControlForElems   0.056492 0.090048  25.320359  40.360541
-              CalcFBHourglassForceForElems 0.033556 0.033556  15.040182  15.040182
-            IntegrateStressForElems        0.021408 0.021408   9.595310   9.595310
-    TimeIncrement                          0.000009 0.000009   0.004034   0.004034
+...
 ```
 
-## Program metadata in XSBench
+### Example: XSBench
 
 The XSBench example app demonstrates the Adiak C API. You find the Adiak
 annotations in the `record_globals` function in
-[io.c](https://github.com/daboehme/XSBench/blob/caliper-support/openmp-threading/io.c):
+[io.c](https://github.com/daboehme/XSBench/blob/caliper-support/openmp-threading/io.c).
+Here, too, we record basic environment information as well as the program
+configuration flags:
 
 ```c
 void record_globals(Inputs in, int version)
@@ -322,8 +290,53 @@ void record_globals(Inputs in, int version)
 }
 ```
 
-Here, too, we record basic environment information as well as the program
-configuration flags.
+## Using the Caliper global value API
+
+Internally, Caliper stores metadata values as attributes with the 
+`CALI_ATTR_GLOBAL` property. These can be created and set conveniently with 
+the `cali_set_global_string|int|uint|double_byname` function family in C
+and C++:
+
+```c
+cali_set_global_double_byname("maxtemperature", 70.2);
+cali_set_global_string_byname("version", "0.99");
+```
+
+Unlike Adiak the Caliper functions do not support complex or custom
+datatypes.
+
+## Providing metadata in config strings
+
+You can also pass in metadata name-value pairs in a `CALI_CONFIG`
+or ConfigManager config string using the `metadata` keyword like so:
+
+    CALI_CONFIG=spot,metadata(experiment=metadata_test,expected_result=42)
+
+Values passed in through the `metadata` keyword are always recorded as strings.
+
+Finally, Caliper can read metadata name-value pairs from a JSON file at
+runtime. To do so, specify a file name and (optionally) a list of dictionary
+keys to read in a `metadata` entry in a Caliper config string with the
+special `file` and `keys` arguments:
+
+    CALI_CONFIG=spot,metadata(file=data.json,keys="experiment,expected_result")
+
+The JSON file should contain a dictionary:
+
+```json
+{
+  "experiment": "metadata_test", "expected_result": 42, "extra": { "val": 4242 }
+}
+```
+
+If a list of keys was provided, Caliper will only read the specified dictionary
+entries from the file, otherwise it will read all entries. The
+dictionaries can be nested. In this case Caliper will record a value for each
+sub-entry where the name is the path of keys separated with ".". For example,
+with the file above Caliper would create a `extra.val=4242` name-value pair. 
+
+There can be multiple `metadata` entries in a Caliper config string, each
+with a list of name-value pairs or file specifications.
 
 [Next - ConfigManager](configmanager.md)
 
