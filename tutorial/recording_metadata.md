@@ -39,13 +39,14 @@ library to record program metadata. Detailed documentation for Adiak is
 available [here](https://software.llnl.gov/Adiak). This section covers basic
 use of Adiak for recording run metadata in an application.
 
-At its core, Adiak is an in-memory key-value store. To use Adiak, an application 
+At its core, Adiak is an in-memory key-value store. To use Adiak, an application
 first initializes Adiak and then registers name-value pairs with Adiak's data
 collection API. By default, Adiak makes deep copies of all passed-in values: it
-is intended collecting descriptive run metadata, not for storing large datasets.
+is not intended for storing large datasets, but for collecting descriptive
+run metadata.
 
 Caliper automatically imports all name-value pairs collected with Adiak as run
-metadata in .cali or .json output files. It can also be printed in text-based
+metadata in .cali or .json output files. They can also be printed in text-based
 recipes like runtime-report with the `print.metadata` option, e.g.
 `CALI_CONFIG=runtime-report,print.metadata`.
 
@@ -129,7 +130,7 @@ Adiak's internal type system supports many common datatypes, including
 integrals (integers and floating-point values), strings, UNIX time objects,
 as well as compound types like lists and tuples. There are also specialized
 types such as "path" and "version" for strings that represent file paths or
-program versions, respectively. The `adiak::value` template automatically 
+program versions, respectively. The `adiak::value` template automatically
 derives an appropriate Adiak datatype from the passed-in value. There are also
 converters like `adiak::path` and `adiak::version` to convert strings to the
 specialized "path" and "version" types. Here are a few examples:
@@ -150,7 +151,7 @@ type descriptor to describe the desired datatype:
 int adiak_namevalue(const char *name, int category, const char *subcategory, const char *typestr, ...);
 ```
 
-Supported data types include integers (`%d`, `%u`), strings (`%s`), specialized 
+Supported data types include integers (`%d`, `%u`), strings (`%s`), specialized
 strings like program versions (`%v`), and even compound types like arrays and
 structs. See [adiak_namevalue](https://software.llnl.gov/Adiak/ApplicationAPI.html#_CPPv415adiak_namevaluePKciPKcPKcz)
 in the Adiak documentation for more details. Examples:
@@ -169,9 +170,9 @@ adiak_namevalue("alphabet", adiak_general, NULL, "[(%u, %s)]", letters, 3, 2);
 ### Example: LULESH
 
 In our LULESH example, we use the `adiak::collect_all()` function to collect
-all Adiak-provided system and execution attributes. Then, we record 
-application-specific variables like the input problem size and number of 
-iterations with `adiak::value`. This is done in `RecordGlobals` in 
+all Adiak-provided system and execution attributes. Then, we record
+application-specific variables like the input problem size and number of
+iterations with `adiak::value`. This is done in `RecordGlobals` in
 [lulesh-util.cc](https://github.com/daboehme/LULESH/blob/adiak-caliper-support/lulesh-util.cc):
 
 ```c++
@@ -292,8 +293,8 @@ void record_globals(Inputs in, int version)
 
 ## Using the Caliper global value API
 
-Internally, Caliper stores metadata values as attributes with the 
-`CALI_ATTR_GLOBAL` property. These can be created and set conveniently with 
+Internally, Caliper stores metadata values as attributes with the
+`CALI_ATTR_GLOBAL` property. These can be created and set conveniently with
 the `cali_set_global_string|int|uint|double_byname` function family in C
 and C++:
 
@@ -331,9 +332,10 @@ The JSON file should contain a dictionary:
 
 If a list of keys was provided, Caliper will only read the specified dictionary
 entries from the file, otherwise it will read all entries. The
-dictionaries can be nested. In this case Caliper will record a value for each
-sub-entry where the name is the path of keys separated with ".". For example,
-with the file above Caliper would create a `extra.val=4242` name-value pair. 
+dictionaries can be nested. In this case Caliper will record a name-value pair
+for each sub-entry where the name is the path of keys separated with ".". For
+example, with the file above Caliper would create a `extra.val=4242` name-value
+pair.
 
 There can be multiple `metadata` entries in a Caliper config string, each
 with a list of name-value pairs or file specifications.
