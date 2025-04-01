@@ -117,7 +117,8 @@ void bar()
 ### Marking user-defined regions
 
 Use `CALI_MARK_BEGIN` and `CALI_MARK_END` to mark arbitrary code regions
-using a custom name:
+using a custom name. In C++, you can use `CALI_CXX_MARK_SCOPE` to mark a
+region that automatically closes when exiting the current C++ scope.
 
 ```c++
 #include <caliper/cali.h>
@@ -125,6 +126,12 @@ using a custom name:
 CALI_MARK_BEGIN("setup");
 
 CALI_MARK_END("setup");
+
+{
+  CALI_CXX_MARK_SCOPE("scope region");
+
+  // scope region automatically closes when leaving the current C++ scope
+}
 ```
 
 Caliper supports region levels to allow collection of profiling data at different

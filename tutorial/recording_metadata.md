@@ -338,7 +338,7 @@ example, with the file above Caliper would create a `extra.val=4242` name-value
 pair.
 
 There can be multiple `metadata` entries in a Caliper config string, each
-with a list of name-value pairs or file specifications.
+with a list of name-value pairs or a file specification.
 
 [Next - ConfigManager](configmanager.md)
 
