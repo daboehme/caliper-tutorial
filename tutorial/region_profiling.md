@@ -54,7 +54,7 @@ Caliper installation directory. If the Caliper installation directory is not
 already in the CMake package search path you can point the CMake executable to
 it with `-Dcaliper_DIR`:
 
-    $ cmake -Dcaliper_DIR=/path/to/caliper/share/cmake/caliper
+    $ cmake -Dcaliper_DIR=/path/to/caliper/share/cmake/caliper .
 
 Without CMake, link the `libcaliper.so` library to the target code:
 
