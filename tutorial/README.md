@@ -34,6 +34,10 @@ support, region filtering, and many more.
 
 ## Getting started
 
+This tutorial repository comes with a copy of Caliper and three example
+applications, as well as scripts to set up the tutorial environment - see
+the [tutorial setup](#tutorial-setup) section below.
+
 Generally, you can download and install Caliper either with the
 [spack](https://github.com/spack/spack) package manager, or directly from the
 [Caliper](https://github.com/LLNL/Caliper) github repository.
@@ -56,11 +60,8 @@ in the main documentation to learn more.
 
 ### Tutorial setup
 
-This tutorial repository comes with a copy of Caliper and three example
-applications, as well as scripts to set up the tutorial environment.
-
-Clone the tutorial repository, then source `setup-env.sh` to build the
-tutorial examples:
+To set up the tutorial environment, clone the tutorial repository, then source
+`setup-env.sh` to build the tutorial examples:
 
     git clone --recursive https://github.com/daboehme/caliper-tutorial
     cd caliper-tutorial

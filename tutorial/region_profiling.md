@@ -30,8 +30,7 @@ There are several steps to integrate Caliper into an application:
 * Optionally, initialize Adiak and pass name/value pairs that describe
   metadata about this run, such as a problem size or set of enabled
   physics packages. We will cover metadata collection in the
-  [Recording metadata](recording_metadata.md) section.
-  of performance analysis they want.
+  [recording metadata](recording_metadata.md) section.
 
 Most of these steps are relatively easy and involve only a few lines of code.
 Adding annotations throughout the code can be significant effort, though it
