@@ -56,6 +56,7 @@ void LagrangeLeapFrog(Domain& domain)
 {
    CALI_CXX_MARK_FUNCTION;
 // [...]
+}
 ```
 
 We do not annotate *every* function in LULESH: typically, it is best to limit
@@ -191,6 +192,6 @@ Recipes and options for MPI profiling:
 * mpi.message.count
   * Collect statistics for the number of MPI messages sent and received
 
-[Next - Analyzing CUDA codes](analyzing_cuda_codes.md)
+[Next - Analyzing CUDA codes](profiling_cuda.md)
 
 [Back to Table of Contents](README.md#tutorial-contents)

@@ -5,77 +5,34 @@ Fortran that lets you integrate performance measurement capabilities directly
 into your code. It is primarily designed for HPC codes, with support for MPI,
 OpenMP, CUDA, and HIP programming models.
 
-## Caliper use cases
-
 Caliper is great for:
 
-### Lightweight always-on profiling
+* **Lightweight always-on performance profiling:** Enable profiling within the
+  application, for example to create a simple performance report for every
+  execution
+* **Analyzing MPI and GPU activities:** Track time in MPI communication,
+  host<->device memory copies, and GPU kernels. For MPI programs, Caliper
+  automatically collects and aggregates performance data from all ranks.
+* **Automated performance data collection and analysis:** Easy scripting
+  makes Caliper ideal for automated data collection workflows. Caliper is
+  the measurement backend for [Thicket](https://github.com/LLNL/thicket)
+  and TreeScape, two powerful frameworks for exploratory analysis of
+  performance data in Python.
+* **Application instrumentation for third-party tools:** Caliper provides
+  connectors to forward Caliper instrumentation to third-party tools
+  like NVidia NSight or AMD rocprof. This way, Caliper can serve as a
+  common instrumentation API.
+* **Custom analyses:** Caliper provides a set of modular building blocks
+  and APIs to create highly specialized performance analysis solutions.
 
-You can enable profiling within the application, for example to create a
-simple performance report every time your program runs:
-
-    Path                                       Time (E) Time (I) Time % (E) Time % (I)
-    main                                       0.008341 1.024472   0.812121  99.747630
-      lulesh.cycle                             0.000055 1.016131   0.005355  98.935509
-        LagrangeLeapFrog                       0.000053 1.016066   0.005160  98.929181
-          CalcTimeConstraintsForElems          0.001533 0.001533   0.149260   0.149260
-          LagrangeElements                     0.000256 0.155134   0.024925  15.104609
-            ApplyMaterialPropertiesForElems    0.001004 0.087512   0.097754   8.520599
-              EvalEOSForElems                  0.030174 0.086508   2.937889   8.422844
-                CalcEnergyForElems             0.056334 0.056334   5.484955   5.484955
-            CalcQForElems                      0.020190 0.029334   1.965798   2.856102
-              CalcMonotonicQForElems           0.009144 0.009144   0.890305   0.890305
-            CalcLagrangeElements               0.000825 0.038032   0.080326   3.702982
-              CalcKinematicsForElems           0.037207 0.037207   3.622656   3.622656
-          LagrangeNodal                        0.003753 0.859346   0.365411  83.670151
-            CalcForceForNodes                  0.000642 0.855593   0.062508  83.304741
-              CalcVolumeForceForElems          0.001580 0.854951   0.153837  83.242232
-                CalcHourglassControlForElems   0.772238 0.820102  75.188888  79.849162
-                  CalcFBHourglassForceForElems 0.047864 0.047864   4.660274   4.660274
-                IntegrateStressForElems        0.033269 0.033269   3.239233   3.239233
-        TimeIncrement                          0.000010 0.000010   0.000974   0.000974
-
-### Analyzing MPI transfers and GPU activities
-
-Caliper's MPI and CPU measurement functionality lets you track
-MPI functions, host<->device memory copies, and GPU kernels. For MPI
-programs, Caliper automatically collects and aggregates performance data
-from all ranks.
-
-### Automated performance data collection and analysis
-
-Caliper performance measurements are easily scriptable, which makes it
-ideally suited for automated performance data collection workflows.
-Moreover, Caliper can automatically record custom program metadata describing
-each run, enabling performance comparisons across large collections of runs -
-ideal for performance regression testing, scalability studies, or exploring
-different program configurations.
-
-Caliper can write a variety of machine-readable output formats that allow
-you to create custom analysis scripts in Python, for example with the
-[Hatchet](https://github.com/LLNL/hatchet) call-path analysis framework:
-
-![Analyzing Caliper data in Hatchet](img/hatchet_screenshot.png)
-
-### User instrumentation for third-party tools
-
-Caliper provides connectors to forward Caliper instrumentation to third-party
-tools like NVidia NSight or AMD rocprof. This way, Caliper can serve as a
-common instrumentation API.
-
-### Custom analyses
-
-Caliper provides highly flexible instrumentation APIs and measurement
-building blocks to create highly specialized performance analysis
-solutions. However, this is beyond the scope of this tutorial - here, we'll
-focus on Caliper's high-level source-code instrumentation API and built-in
-turnkey measurement recipes.
+This tutorial provides an overview of Caliper's region instrumentation,
+run metadata collection, and built-in performance profiling capabilities.
+It also demonstrates how to collect data for Thicket and TreeScape.
+The [full documentation](https://software.llnl.gov/Caliper/index.html)
+has more information about specific features like MPI profiling, Fortran
+support, region filtering, and many more.
 
 ## Getting started
-
-This tutorial repository comes with a copy of Caliper and scripts to configure
-and build Caliper and the tutorial examples - see the
-[tutorial setup](#tutorial-setup) instructions below.
 
 Generally, you can download and install Caliper either with the
 [spack](https://github.com/spack/spack) package manager, or directly from the
@@ -95,12 +52,15 @@ and run CMake:
 There are many build options, some of which require additional
 dependencies. See the
 [build instructions](https://software.llnl.gov/Caliper/build.html)
-in the documentation to learn more.
+in the main documentation to learn more.
 
 ### Tutorial setup
 
-Clone the tutorial repository, then source `setup-env.sh` to build the tutorial
-examples:
+This tutorial repository comes with a copy of Caliper and three example
+applications, as well as scripts to set up the tutorial environment.
+
+Clone the tutorial repository, then source `setup-env.sh` to build the
+tutorial examples:
 
     git clone --recursive https://github.com/daboehme/caliper-tutorial
     cd caliper-tutorial
@@ -148,7 +108,23 @@ demonstrate various Caliper capabilities:
 
 Let's get started with the first tutorial chapter - [region profiling](region_profiling.md)!
 
-## Resources
+## Tutorial contents
+
+* [Region profiling](region_profiling.md) covers source-code instrumentation and performance profiling with Caliper.
+
+* [Recording metadata](recording_metadata.md) covers automatic program metadata recording with the Adiak library.
+
+* [The ConfigManager API](configmanager.md) covers the ConfigManager profiling control API.
+
+* [Recording data for Thicket](recording_for_thicket.md) shows how to record data for the Python performance data analysis frameworks [Thicket](https://github.com/LLNL/thicket), [Hatchet](https://github.com/LLNL/hatchet), and TreeScape.
+
+* [Analyzing data with cali-query](analysis_with_caliquery.md) demonstrates the *cali-query* tool for processing Caliper data.
+
+* [Profiling MPI programs](profiling_mpi.md) covers performance profiling of MPI programs.
+
+* [Profiling CUDA codes](profiling_cuda.md) shows options to profile CUDA programs with Caliper.
+
+## Additional resources
 
 You can find the Caliper Github repository here:
 <https://github.com/LLNL/Caliper>.
@@ -161,19 +137,3 @@ For general *questions and comments*, please use the Github discussion page:
 
 For *bug reports*, please use the Github issue tracker:
 <https://github.com/LLNL/Caliper/issues>.
-
-## Tutorial contents
-
-* [Region profiling](region_profiling.md) covers basic source-code instrumentation and performance profiling with Caliper.
-
-* [Profiling MPI programs](profiling_mpi.md) covers performance profiling of MPI programs.
-
-* [Recording metadata](recording_metadata.md) covers automatic program metadata recording with the Adiak library.
-
-* [The ConfigManager API](configmanager.md) covers the ConfigManager profiling control API.
-
-* [Analyzing data with Hatchet](recording_hatchet.md) shows how to record data for custom analyses with [Hatchet](https://github.com/LLNL/hatchet).
-
-* [Analyzing data with cali-query](analysis_with_caliquery.md) demonstrates the *cali-query* tool for processing Caliper data.
-
-* [Analyzing CUDA codes](analyzing_cuda_codes.md) shows options to profile CUDA programs with Caliper.

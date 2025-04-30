@@ -124,6 +124,6 @@ cali_ConfigManager_start(&mgr);
 cali_ConfigManager_flush(&mgr);
 ```
 
-[Next - Analyzing data with Hatchet](recording_hatchet.md)
+[Next - Recording Data for Thicket](recording_for_thicket.md)
 
 [Back to Table of Contents](README.md#tutorial-contents)
