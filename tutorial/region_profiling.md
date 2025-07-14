@@ -223,7 +223,7 @@ There are many more options and profiling recipes available. The
 `cali-query --help=<config>` command shows the list of parameters for a given
 recipe:
 
-    $ cali-config --help=runtime-report
+    $ cali-query --help=runtime-report
     runtime-report
      Print a time profile for annotated regions
       Options:
