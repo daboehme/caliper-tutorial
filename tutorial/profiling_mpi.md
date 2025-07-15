@@ -10,12 +10,12 @@ Make sure the MPI build config is loaded:
     Install directory: /home/david/src/caliper-tutorial/install/mpi
     Done! /home/david/src/caliper-tutorial/install/mpi/bin added to PATH
 
-You can now launch Lulesh with your system's MPI launcher, e.g. `mpirun`.
+You can now launch Lulesh with your system's MPI launcher, e.g. `flux run`.
 Lulesh must be launched with a cubic power (e.g., 1, 8, 27, ...) of MPI ranks,
 others like 16 or 32 will not work. It is also helpful to limit the number of
 iterations for test runs with the *-i* parameter, e.g. `-i 10`:
 
-    $ mpirun -n 8 lulesh2.0 -i 10
+    $ flux run -n 8 lulesh2.0 -i 10
     Running problem size 30^3 per domain until completion
     Num processors: 8
     Total number of elements: 216000
@@ -29,7 +29,7 @@ iterations for test runs with the *-i* parameter, e.g. `-i 10`:
 The *mpi-report* Caliper recipe measures and prints the number of MPI calls
 and the time spent in MPI functions:
 
-    $ CALI_CONFIG=mpi-report mpirun -np 8 lulesh2.0 -i 10
+    $ CALI_CONFIG=mpi-report flux run -n 8 lulesh2.0 -i 10
     [...]
     Function      Count (min) Count (max) Time (min) Time (max) Time (avg) Time %
                           435         505   0.495476   0.669825   0.546080 77.752653
@@ -79,7 +79,7 @@ MPI programs.
 In an MPI build, runtime-report prints summary statistics across
 all MPI processes with the minimum, maximum, and average time per process:
 
-    $ CALI_CONFIG=runtime-report mpirun -n 8 lulesh2.0 -i 10
+    $ CALI_CONFIG=runtime-report flux run -n 8 lulesh2.0 -i 10
     [...]
     Path                                       Min time/rank Max time/rank Avg time/rank Time %
     main                                            0.006932      0.027010      0.010127  1.673192
@@ -117,7 +117,7 @@ all MPI processes with the minimum, maximum, and average time per process:
 Furthermore, we can use the *profile.mpi* option to measure and print the time
 in MPI functions inside the Lulesh region annotations:
 
-    $ CALI_CONFIG=runtime-report,profile.mpi mpirun -n 8 lulesh2.0 -i 10
+    $ CALI_CONFIG=runtime-report,profile.mpi flux run -n 8 lulesh2.0 -i 10
     [...]
     Path                                       Min time/rank Max time/rank Avg time/rank Time %
     MPI_Comm_dup                                    0.027007      0.067727      0.053946  7.381235
@@ -147,7 +147,7 @@ in MPI functions inside the Lulesh region annotations:
 The *mpi.message.count* and *mpi.message.size* options collect statistics for
 the number and sizes of MPI messages, respectively:
 
-    $ CALI_CONFIG=runtime-report,mpi.message.size mpirun -n 8 lulesh2.0 -i 10
+    $ CALI_CONFIG=runtime-report,mpi.message.size flux run -n 8 lulesh2.0 -i 10
     [...]
     Path                                      [...] Msg size (min) Msg size (avg) Msg size (max)
     main

@@ -26,7 +26,7 @@ format. We can read and display this data with *cali-query*. With the
 *--tree* option, *cali-query* prints a table with hierarchical region. With
 *hatchet-region-profile* data, we see times for each MPI rank:
 
-    $ mpirun -n 8 lulesh2.0 -i 4 -P hatchet-region-profile,output.format=cali
+    $ flux run -n 8 lulesh2.0 -i 4 -P hatchet-region-profile,output.format=cali
     $ cali-query --tree region_profile.cali
     Path                                       mpi.rank time
     main
