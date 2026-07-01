@@ -25,7 +25,7 @@ check-cmake-version()
     fi
 }
 
-check-cmake-version "3.15"
+check-cmake-version "3.21"
 
 SCRIPT_DIR=$(dirname ${BASH_SOURCE[0]})
 ROOT_DIR=$(bash -c "cd ${SCRIPT_DIR} && pwd")
