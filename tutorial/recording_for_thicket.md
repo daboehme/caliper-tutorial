@@ -27,11 +27,11 @@ on large sets of runs.
 Thicket, Hatchet and TreeScape import profiles in Caliper's `.cali` file format.
 While the `.cali` format supports a wide spectrum of performance experiments, the
 tools discussed here expect aggregate performance profiles. Caliper provides several
-built-in recipes to create such profiles, primarily `spot` and `hatchet-region-profile`:
+built-in recipes to create such profiles, primarily `spot` and `runtime-profile`:
 
 * The `spot` recipe is the primary configuration for Thicket and TreeScape.
   It records summary performance statistics per Caliper region across MPI ranks.
-* The `hatchet-region-profile` recipe records performance data for each MPI rank.
+* The `runtime-profile` recipe records performance data for each MPI rank.
 
 In the following, we focus on the `spot` recipe. Spot always records the
 minimum, maximum, average, and total inclusive time in seconds in each Caliper

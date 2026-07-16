@@ -223,27 +223,48 @@ We can view the recorded data with in a runtime report with the
 
 ```
 $ CALI_CONFIG=runtime-report,print.metadata lulesh2.0 -i 10
-cali.caliper.version : 2.7.0-dev
-figure_of_merit      : 1257.281757
-elapsed_time         :    0.214749
-Compiler Flags       :
-Built by             : boehme3
-Compiler Version     : 11.0.0.11000033
-Compiler Name        : AppleClang
-region_balance       :           1
-region_cost          :           1
-num_regions          :          11
-problem_size         :          30
-iterations           :          10
-threads              :           1
-jobsize              :           1
-cluster              : condor
-user                 : boehme3
-cali.channel         : runtime-report
-Path                                       Time (E) Time (I) Time % (E) Time % (I)
-main                                       0.004968 0.219693   2.226714  98.468910
-  lulesh.cycle                             0.000042 0.214725   0.018825  96.242196
-    LagrangeLeapFrog                       0.000031 0.214674   0.013895  96.219337
+mpi.world.size        :           1
+cali.caliper.version  : 2.15.0
+adiakversion          : 0.5.0
+user                  : boehme3
+uid                   : ,,,
+launchdate            :  1784240684
+launchday             :  1784160000
+executable            : lulesh2.0
+executablepath        : /home/boehme3/src/caliper~~install/mpi/bin/lulesh2.0
+working_directory     : /home/boehme3/src/caliper-tutorial
+libraries             : [linux-vdso.so.1,/home/bo~~b/openmpi3/mca_osc_sm.so]
+cmdline               : [lulesh2.0,-i,10]
+hostname              : talent18
+cluster               : talent
+jobsize               :           1
+numhosts              :           1
+hostlist              : [talent18]
+mpi_version           : 3.1
+mpi_library_vendor    : Open MPI
+mpi_library_version   : 4.1.6
+threads               :           1
+iterations            :          10
+problem_size          :          30
+num_regions           :          11
+region_cost           :           1
+region_balance        :           1
+Compiler Name         : GNU
+Compiler Version      : 13.3.0
+Built by              : boehme3
+Compiler Flags        :
+elapsed_time          :    0.132395
+figure_of_merit       : 2039.346132
+opts:print.metadata   : true
+opts:output.append    : true
+opts:order_as_visited : true
+starttime.nsec        :   953340561
+starttime.sec         :  1784240684
+cali.channel          : runtime-report
+Path                               Min time/rank Avg time/rank Max time/rank Time %
+main                                    0.137743      0.137743      0.137743 100.000000
+  lulesh.cycle                          0.132363      0.132363      0.132363  96.094192
+    TimeIncrement                       0.000042      0.000042      0.000042   0.030468
 ...
 ```
 
@@ -253,17 +274,12 @@ The XSBench example app demonstrates the Adiak C API. You find the Adiak
 annotations in the `record_globals` function in
 [io.c](https://github.com/daboehme/XSBench/blob/caliper-support/openmp-threading/io.c).
 Here, too, we record basic environment information as well as the program
-configuration flags:
+configuration settings:
 
 ```c
 void record_globals(Inputs in, int version)
 {
-	adiak_cmdline();
-	adiak_executable();
-	adiak_clustername();
-	adiak_job_size();
-	adiak_launchdate();
-	adiak_user();
+	adiak_collect_all();
 
 	const char* method = in.simulation_method == EVENT_BASED ? "event" : "history";
 	adiak_namevalue("method",    adiak_general, NULL, "%s", method);

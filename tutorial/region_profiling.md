@@ -184,11 +184,11 @@ the annotated code regions. Let's try it with the `basic_example` program:
 
     $ CALI_CONFIG=runtime-report basic_example
     Path        Time (E) Time (I) Time % (E) Time % (I)
-    main        0.000022 0.000226   2.217742  22.782258
-      main loop 0.000016 0.000022   1.612903   2.217742
-        bar     0.000005 0.000005   0.504032   0.504032
-        foo     0.000001 0.000001   0.100806   0.100806
-      setup     0.000182 0.000182  18.346774  18.346774
+    main        0.000007 0.000153   4.258527 100.000000
+      setup     0.000141 0.000141  92.277219  92.277219
+      main loop 0.000003 0.000005   2.155043   3.464254
+        foo     0.000001 0.000001   0.963308   0.963308
+        bar     0.000001 0.000001   0.345903   0.345903
 
 In a non-MPI program, runtime-report prints exclusive and inclusive times (Time (E)
 and Time (I)) as well as the percentage of runtime (Time %) spent in each annotated
@@ -208,16 +208,16 @@ name, separated by commas. Here, we're adding the *output* option to
 redirect output to `report.txt` instead of stdout, and the *region.count*
 option to show how often each region was called:
 
-    $ CALI_CONFIG=runtime-report,output=report.txt basic_example
+    $ CALI_CONFIG=runtime-report,region.count,output=report.txt basic_example
     $ ls -l report.txt
-    $ -rw-r--r-- 1 david users 1680 Oct 19 17:26 report.txt
+    -rw-r--r-- 1 boehme3 boehme3 354 Jul 16 14:32 report.txt
     $ cat report.txt
     Path        Time (E) Time (I) Time % (E) Time % (I) Calls
-    main        0.000009 0.000291   2.205651  71.528187     1
-      setup     0.000255 0.000255  62.652775  62.652775     1
-      main loop 0.000004 0.000027   1.013912   6.669761     5
-        foo     0.000022 0.000022   5.447811   5.447811     4
-        bar     0.000001 0.000001   0.208039   0.208039     4
+    main        0.000007 0.000173   4.254876 100.000000     1
+      setup     0.000159 0.000159  92.210766  92.210766     1
+      main loop 0.000004 0.000006   2.219961   3.534358     5
+        foo     0.000002 0.000002   1.013699   1.013699     4
+        bar     0.000001 0.000001   0.300698   0.300698     4
 
 There are many more options and profiling recipes available. The
 `cali-query --help=<config>` command shows the list of parameters for a given
@@ -250,29 +250,24 @@ which can be very helpful for diagnosing problems or submitting bug reports:
 
     $ CALI_CONFIG=runtime-report CALI_LOG_VERBOSITY=1 basic_example
     == CALIPER: Initialized
-    == CALIPER: Creating channel default
-    == CALIPER: default: No services enabled, default channel will not record data.
+    == CALIPER: No manual config specified, disabling default channel
     == CALIPER: Creating channel builtin.configmgr
-    == CALIPER: builtin.configmgr: Registered MPI service
-    == CALIPER: builtin.configmgr: Registered mpiflush service
     == CALIPER: Creating channel runtime-report
     == CALIPER: runtime-report: Registered aggregation service
     == CALIPER: runtime-report: Registered event trigger service
     == CALIPER: runtime-report: Registered report service
-    == CALIPER: runtime-report: Registered timestamp service
+    == CALIPER: runtime-report: Registered timer service
     == CALIPER: Registered builtin ConfigManager
     == CALIPER: Finalizing ...
-    == CALIPER: default: Flushing Caliper data
-    == CALIPER: Releasing channel default
     == CALIPER: builtin.configmgr: Flushing Caliper data
     == CALIPER: runtime-report: Flushing Caliper data
     == CALIPER: runtime-report: Aggregate: flushed 6 snapshots.
     Path        Time (E) Time (I) Time % (E) Time % (I)
-    main        0.000020 0.000120   2.427184  14.563107
-      main loop 0.000025 0.000036   3.033981   4.368932
-        bar     0.000006 0.000006   0.728155   0.728155
-        foo     0.000005 0.000005   0.606796   0.606796
-      setup     0.000064 0.000064   7.766990   7.766990
+    main        0.000009 0.000196   4.386363 100.000000
+      setup     0.000182 0.000182  92.730194  92.730194
+      main loop 0.000004 0.000006   1.829309   2.883443
+        foo     0.000001 0.000001   0.733865   0.733865
+        bar     0.000001 0.000001   0.320269   0.320269
     == CALIPER: Releasing channel builtin.configmgr
     == CALIPER: Releasing channel runtime-report
     == CALIPER: Finished
